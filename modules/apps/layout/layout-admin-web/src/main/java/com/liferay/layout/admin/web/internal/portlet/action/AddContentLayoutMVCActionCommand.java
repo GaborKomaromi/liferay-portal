@@ -14,6 +14,10 @@
 
 package com.liferay.layout.admin.web.internal.portlet.action;
 
+import com.liferay.asset.entry.rel.model.AssetEntryAssetCategoryRel;
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalService;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.admin.web.internal.handler.LayoutExceptionRequestHandler;
 import com.liferay.layout.admin.web.internal.security.permission.resource.LayoutPageTemplateEntryPermission;
@@ -36,6 +40,7 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.MultiSessionMessages;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -44,7 +49,9 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.sites.kernel.util.Sites;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -141,6 +148,31 @@ public class AddContentLayoutMVCActionCommand
 						masterLayoutPlid =
 							layoutPageTemplateEntryLayout.getMasterLayoutPlid();
 					}
+
+					AssetEntry assetEntry = _assetEntryLocalService.fetchEntry(
+						portal.getClassNameId(Layout.class),
+						layoutPageTemplateEntry.getPlid());
+
+					List<AssetEntryAssetCategoryRel>
+						assetEntryAssetCategoryRels =
+							_assetEntryAssetCategoryRelLocalService.
+								getAssetEntryAssetCategoryRelsByAssetEntryId(
+									assetEntry.getEntryId());
+
+					List<Long> assetCategoryIds = new ArrayList<>();
+
+					for (AssetEntryAssetCategoryRel assetEntryAssetCategoryRel :
+							assetEntryAssetCategoryRels) {
+
+						assetCategoryIds.add(
+							assetEntryAssetCategoryRel.getAssetCategoryId());
+					}
+
+					if (assetCategoryIds != null) {
+						serviceContext.setAssetCategoryIds(
+							ArrayUtil.toArray(
+								assetCategoryIds.toArray(new Long[0])));
+					}
 				}
 
 				layout = _layoutService.addLayout(
@@ -188,6 +220,13 @@ public class AddContentLayoutMVCActionCommand
 				actionRequest, actionResponse, exception);
 		}
 	}
+
+	@Reference
+	private AssetEntryAssetCategoryRelLocalService
+		_assetEntryAssetCategoryRelLocalService;
+
+	@Reference
+	private AssetEntryLocalService _assetEntryLocalService;
 
 	@Reference
 	private LayoutExceptionRequestHandler _layoutExceptionRequestHandler;

@@ -43,6 +43,8 @@ public class GroupConstants {
 
 	public static final String GLOBAL_FRIENDLY_URL = "/global";
 
+	public static final int GROUP_KEY_MAX_LENGTH = 150;
+
 	public static final String GUEST = "Guest";
 
 	public static final int MEMBERSHIP_RESTRICTION_TO_PARENT_SITE_MEMBERS = 1;

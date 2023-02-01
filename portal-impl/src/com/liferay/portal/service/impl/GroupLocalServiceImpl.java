@@ -386,7 +386,20 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			friendlyURL);
 
 		if (staging) {
-			groupKey = groupKey.concat("-staging");
+			String stagingGroupKeyAddition = "-staging";
+
+			if (groupKey.length() <
+					(GroupConstants.GROUP_KEY_MAX_LENGTH -
+						stagingGroupKeyAddition.length())) {
+
+				groupKey = groupKey.concat(stagingGroupKeyAddition);
+			}
+			else {
+				groupKey = groupKey.substring(0, 139);
+				stagingGroupKeyAddition = "..." + stagingGroupKeyAddition;
+
+				groupKey = groupKey.concat(stagingGroupKeyAddition);
+			}
 
 			for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
 				String name = entry.getValue();

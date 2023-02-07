@@ -387,18 +387,27 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 		if (staging) {
 			String stagingGroupKeyAddition = "-staging";
+			int groupKeyMaxLength = ModelHintsUtil.getMaxLength(
+				Group.class.getName(), "groupKey");
 
 			if (groupKey.length() <
-					(GroupConstants.GROUP_KEY_MAX_LENGTH -
-						stagingGroupKeyAddition.length())) {
+					(groupKeyMaxLength - stagingGroupKeyAddition.length())) {
 
 				groupKey = groupKey.concat(stagingGroupKeyAddition);
 			}
 			else {
-				groupKey = groupKey.substring(0, 139);
-				stagingGroupKeyAddition = "..." + stagingGroupKeyAddition;
+				int counter = 1;
 
-				groupKey = groupKey.concat(stagingGroupKeyAddition);
+				groupKey = _createLongStagingGroupKey(
+					groupKey, stagingGroupKeyAddition, groupKeyMaxLength,
+					counter);
+
+				while (fetchGroup(user.getCompanyId(), groupKey) != null) {
+					counter++;
+					groupKey = _createLongStagingGroupKey(
+						groupKey, stagingGroupKeyAddition, groupKeyMaxLength,
+						counter);
+				}
 			}
 
 			for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
@@ -5242,6 +5251,20 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	protected File publicLARFile;
+
+	private String _createLongStagingGroupKey(
+		String groupKey, String stagingGroupKeyAddition, int groupKeyMaxLength,
+		int counter) {
+
+		String createdStagingGroupKeyAddition =
+			counter + stagingGroupKeyAddition;
+
+		groupKey = groupKey.substring(
+			0, groupKeyMaxLength - createdStagingGroupKeyAddition.length());
+		groupKey = groupKey.concat(createdStagingGroupKeyAddition);
+
+		return groupKey;
+	}
 
 	private Collection<Group> _filterGroups(
 		String actionId, Collection<Group> groups) {

@@ -34,16 +34,20 @@ import com.liferay.object.rest.dto.v1_0.ObjectEntry;
 import com.liferay.object.rest.dto.v1_0.Status;
 import com.liferay.object.rest.dto.v1_0.util.CreatorUtil;
 import com.liferay.object.rest.dto.v1_0.util.LinkUtil;
+import com.liferay.object.rest.internal.util.DTOConverterUtil;
 import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.system.SystemObjectDefinitionMetadata;
+import com.liferay.object.system.SystemObjectDefinitionMetadataRegistry;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -52,13 +56,13 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.language.LanguageResources;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
+import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 
@@ -120,8 +124,61 @@ public class ObjectEntryDTOConverter
 	}
 
 	private void _addNestedFields(
-		Map<String, Object> map, String nestedFields, String objectFieldName,
-		ObjectRelationship objectRelationship, Object value) {
+			DTOConverterContext dtoConverterContext, Map<String, Object> map,
+			int nestedFieldsDepth, String objectFieldName,
+			ObjectRelationship objectRelationship, long primaryKey)
+		throws Exception {
+
+		UriInfo uriInfo = dtoConverterContext.getUriInfo();
+
+		if (uriInfo == null) {
+			return;
+		}
+
+		MultivaluedMap<String, String> queryParameters =
+			uriInfo.getQueryParameters();
+
+		String nestedFields = queryParameters.getFirst("nestedFields");
+
+		if (nestedFields == null) {
+			return;
+		}
+
+		Object value = null;
+
+		ObjectDefinition objectDefinition =
+			_objectDefinitionLocalService.getObjectDefinition(
+				objectRelationship.getObjectDefinitionId1());
+
+		if (objectDefinition.isSystem()) {
+			if (FeatureFlagManagerUtil.isEnabled("LPS-172094")) {
+				value = _objectEntryLocalService.getSystemModelAttributes(
+					objectDefinition, primaryKey);
+			}
+			else {
+				SystemObjectDefinitionMetadata systemObjectDefinitionMetadata =
+					_systemObjectDefinitionMetadataRegistry.
+						getSystemObjectDefinitionMetadata(
+							objectDefinition.getName());
+
+				value = DTOConverterUtil.toDTO(
+					systemObjectDefinitionMetadata.
+						getBaseModelByExternalReferenceCode(
+							systemObjectDefinitionMetadata.
+								getExternalReferenceCode(primaryKey),
+							objectDefinition.getCompanyId()),
+					_dtoConverterRegistry,
+					systemObjectDefinitionMetadata.
+						getJaxRsApplicationDescriptor(),
+					dtoConverterContext.getUser());
+			}
+		}
+		else {
+			value = _toDTO(
+				_getDTOConverterContext(dtoConverterContext, primaryKey),
+				nestedFieldsDepth - 1,
+				_objectEntryLocalService.getObjectEntry(primaryKey));
+		}
 
 		String objectFieldNameNestedField = StringUtil.replaceLast(
 			objectFieldName.substring(
@@ -134,8 +191,7 @@ public class ObjectEntryDTOConverter
 					StringUtil.replaceLast(objectFieldName, "Id", ""), value);
 			}
 
-			if (GetterUtil.getBoolean(
-					PropsUtil.get("feature.flag.LPS-161364")) &&
+			if (FeatureFlagManagerUtil.isEnabled("LPS-161364") &&
 				nestedField.equals(objectRelationship.getName())) {
 
 				map.put(nestedField, value);
@@ -144,9 +200,9 @@ public class ObjectEntryDTOConverter
 	}
 
 	private void _addObjectRelationshipNames(
-		Map<String, Object> map, long objectEntryId, ObjectField objectField,
+		Map<String, Object> map, ObjectField objectField,
 		String objectFieldName, ObjectRelationship objectRelationship,
-		Map<String, Serializable> values) {
+		long primaryKey, Map<String, Serializable> values) {
 
 		String objectRelationshipERCObjectFieldName =
 			ObjectFieldSettingUtil.getValue(
@@ -157,14 +213,14 @@ public class ObjectEntryDTOConverter
 		String relatedObjectEntryERC = GetterUtil.getString(
 			values.get(objectRelationshipERCObjectFieldName));
 
-		if (GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-161364")) &&
+		if (FeatureFlagManagerUtil.isEnabled("LPS-161364") &&
 			(map.get(objectRelationship.getName()) == null)) {
 
 			map.put(
 				objectRelationship.getName() + "ERC", relatedObjectEntryERC);
 		}
 
-		map.put(objectFieldName, objectEntryId);
+		map.put(objectFieldName, primaryKey);
 
 		map.put(objectRelationshipERCObjectFieldName, relatedObjectEntryERC);
 	}
@@ -457,61 +513,22 @@ public class ObjectEntryDTOConverter
 						 objectField.getRelationshipType(),
 						 ObjectRelationshipConstants.TYPE_ONE_TO_MANY)) {
 
-				long objectEntryId = 0;
+				long primaryKey = GetterUtil.getLong(serializable);
 
 				ObjectRelationship objectRelationship =
 					_objectRelationshipLocalService.
 						fetchObjectRelationshipByObjectFieldId2(
 							objectField.getObjectFieldId());
 
-				if (serializable != null) {
-					if (GetterUtil.getLong(serializable) > 0) {
-						objectEntryId = (long)serializable;
-					}
-
-					UriInfo uriInfo = dtoConverterContext.getUriInfo();
-
-					if (uriInfo != null) {
-						MultivaluedMap<String, String> queryParameters =
-							uriInfo.getQueryParameters();
-
-						String nestedFields = queryParameters.getFirst(
-							"nestedFields");
-
-						if ((objectEntryId != 0) && (nestedFields != null)) {
-							ObjectDefinition relatedObjectDefinition =
-								_objectDefinitionLocalService.
-									getObjectDefinition(
-										objectRelationship.
-											getObjectDefinitionId1());
-
-							if (relatedObjectDefinition.isSystem()) {
-								_addNestedFields(
-									map, nestedFields, objectFieldName,
-									objectRelationship,
-									_objectEntryLocalService.
-										getSystemModelAttributes(
-											relatedObjectDefinition,
-											objectEntryId));
-							}
-							else {
-								_addNestedFields(
-									map, nestedFields, objectFieldName,
-									objectRelationship,
-									_toDTO(
-										_getDTOConverterContext(
-											dtoConverterContext, objectEntryId),
-										nestedFieldsDepth - 1,
-										_objectEntryLocalService.getObjectEntry(
-											objectEntryId)));
-							}
-						}
-					}
+				if (primaryKey > 0) {
+					_addNestedFields(
+						dtoConverterContext, map, nestedFieldsDepth,
+						objectFieldName, objectRelationship, primaryKey);
 				}
 
 				_addObjectRelationshipNames(
-					map, objectEntryId, objectField, objectFieldName,
-					objectRelationship, values);
+					map, objectField, objectFieldName, objectRelationship,
+					primaryKey, values);
 			}
 			else if ((nestedFieldsDepth == 0) &&
 					 Objects.equals(
@@ -524,8 +541,8 @@ public class ObjectEntryDTOConverter
 							objectField.getObjectFieldId());
 
 				_addObjectRelationshipNames(
-					map, (long)serializable, objectField, objectFieldName,
-					objectRelationship, values);
+					map, objectField, objectFieldName, objectRelationship,
+					(long)serializable, values);
 			}
 			else {
 				map.put(objectFieldName, serializable);
@@ -603,6 +620,9 @@ public class ObjectEntryDTOConverter
 	private DLURLHelper _dlURLHelper;
 
 	@Reference
+	private DTOConverterRegistry _dtoConverterRegistry;
+
+	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
@@ -628,6 +648,10 @@ public class ObjectEntryDTOConverter
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private SystemObjectDefinitionMetadataRegistry
+		_systemObjectDefinitionMetadataRegistry;
 
 	@Reference
 	private UserLocalService _userLocalService;

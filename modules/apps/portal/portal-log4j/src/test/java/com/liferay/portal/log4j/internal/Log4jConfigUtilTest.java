@@ -14,7 +14,6 @@
 
 package com.liferay.portal.log4j.internal;
 
-import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -426,17 +425,20 @@ public class Log4jConfigUtilTest {
 	}
 
 	private String _generateCompanyLogRoutingAppenderConfigurationContent(
-		String appenderName, String filePattern, String loggerName,
-		String priority) {
+		String appenderName, String dirPattern, String fileNamePattern,
+		String loggerName, String priority) {
 
-		StringBundler sb = new StringBundler(14);
+		StringBundler sb = new StringBundler(17);
 
 		sb.append("<?xml version=\"1.0\"?><Configuration strict=\"true\">");
 		sb.append("<Appenders><Appender name=\"");
 		sb.append(appenderName);
-		sb.append("\" filePattern=\"");
-		sb.append(filePattern);
+		sb.append("\" dirPattern=\"");
+		sb.append(dirPattern);
 		sb.append("\" type=\"CompanyLogRouting\">");
+		sb.append("<FilePattern fileNamePattern=\"");
+		sb.append(fileNamePattern);
+		sb.append("\"><Log4j1XmlLayout locationInfo=\"true\" /></FilePattern>");
 		sb.append("<TimeBasedTriggeringPolicy /><DirectWriteRolloverStrategy ");
 		sb.append("/></Appender></Appenders><Loggers><Logger level= \"");
 		sb.append(priority);
@@ -574,7 +576,16 @@ public class Log4jConfigUtilTest {
 		Log4jConfigUtil.configureLog4J(
 			_generateXMLConfigurationContent(loggerName, _INFO));
 
-		Assert.assertNull(Log4jConfigUtil.getCompanyLogDirectory(companyId));
+		try {
+			Log4jConfigUtil.getCompanyLogDirectory(companyId);
+
+			Assert.fail();
+		}
+		catch (IllegalStateException illegalStateException) {
+			Assert.assertEquals(
+				"No company log routing appender defined",
+				illegalStateException.getMessage());
+		}
 
 		File tempLogFileDir = null;
 
@@ -586,15 +597,12 @@ public class Log4jConfigUtilTest {
 
 			String tempLogFileDirPathString = tempLogFileDir.getPath();
 
-			String filePattern = "liferay-@company.id@.%d{yyyy-MM-dd}.xml.log";
-
 			Log4jConfigUtil.configureLog4J(
 				_generateCompanyLogRoutingAppenderConfigurationContent(
 					"COMPANY_LOG_ROUTING_TEXT_FILE",
-					StringBundler.concat(
-						tempLogFileDirPathString, CharPool.FORWARD_SLASH,
-						filePattern),
-					loggerName, _INFO));
+					tempLogFileDirPathString + "/@company.id@",
+					"liferay-@company.id@.%d{yyyy-MM-dd}.xml.log", loggerName,
+					_INFO));
 
 			Logger logger = (Logger)LogManager.getLogger(loggerName);
 
@@ -603,14 +611,19 @@ public class Log4jConfigUtilTest {
 			File companyLogDirectory = Log4jConfigUtil.getCompanyLogDirectory(
 				companyId);
 
+			String expectedCompanyLogDirectory =
+				tempLogFileDirPathString + "/" + companyId;
+
+			Assert.assertEquals(
+				"Company log directory should be " +
+					expectedCompanyLogDirectory,
+				expectedCompanyLogDirectory, companyLogDirectory.getPath());
+
 			if (enabled) {
-				Assert.assertEquals(
-					"Company log directory should be " +
-						tempLogFileDirPathString,
-					tempLogFileDirPathString, companyLogDirectory.getPath());
+				Assert.assertTrue(companyLogDirectory.exists());
 			}
 			else {
-				Assert.assertNull(companyLogDirectory);
+				Assert.assertFalse(companyLogDirectory.exists());
 			}
 		}
 		finally {

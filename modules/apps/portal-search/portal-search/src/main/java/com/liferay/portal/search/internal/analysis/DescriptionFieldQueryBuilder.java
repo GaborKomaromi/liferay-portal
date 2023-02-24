@@ -52,7 +52,6 @@ public class DescriptionFieldQueryBuilder implements FieldQueryBuilder {
 	protected void activate(Map<String, Object> properties) {
 		_exactMatchBoost = GetterUtil.getFloat(
 			properties.get("exact.match.boost"), _exactMatchBoost);
-
 		_proximitySlop = GetterUtil.getInteger(
 			properties.get("proximity.slop"), _proximitySlop);
 	}

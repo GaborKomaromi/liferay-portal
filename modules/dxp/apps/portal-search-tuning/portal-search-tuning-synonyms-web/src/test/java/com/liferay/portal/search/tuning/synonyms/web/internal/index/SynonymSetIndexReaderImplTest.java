@@ -23,7 +23,6 @@ import com.liferay.portal.search.tuning.synonyms.web.internal.BaseSynonymsWebTes
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,44 +55,34 @@ public class SynonymSetIndexReaderImplTest extends BaseSynonymsWebTestCase {
 	}
 
 	@Test
-	public void testFetchOptionalWithDocExistsFalse() {
+	public void testFetchWithDocExistsFalse() {
 		setUpSearchEngineAdapter(_setUpGetDocumentResponse(false));
 
-		SynonymSetIndexName synonymSetIndexName = Mockito.mock(
-			SynonymSetIndexName.class);
-
-		Optional<SynonymSet> synonymSetOptional =
-			_synonymSetIndexReaderImpl.fetchOptional(synonymSetIndexName, "id");
-
-		Assert.assertFalse(synonymSetOptional.isPresent());
+		Assert.assertNull(
+			_synonymSetIndexReaderImpl.fetch(
+				Mockito.mock(SynonymSetIndexName.class), "id"));
 	}
 
 	@Test
-	public void testFetchOptionalWithDocExistsTrue() {
+	public void testFetchWithDocExistsTrue() {
 		setUpSearchEngineAdapter(_setUpGetDocumentResponse(true));
 
 		SynonymSetIndexName synonymSetIndexName = Mockito.mock(
 			SynonymSetIndexName.class);
 
-		Optional<SynonymSet> synonymSetOptional =
-			_synonymSetIndexReaderImpl.fetchOptional(synonymSetIndexName, "id");
+		SynonymSet synonymSet = _synonymSetIndexReaderImpl.fetch(
+			synonymSetIndexName, "id");
 
-		Assert.assertTrue(synonymSetOptional.isPresent());
-
-		synonymSetOptional.ifPresent(
-			synonymSet -> {
-				Assert.assertEquals("car,automobile", synonymSet.getSynonyms());
-				Assert.assertEquals("id", synonymSet.getSynonymSetDocumentId());
-			});
+		Assert.assertNotNull(synonymSet);
+		Assert.assertEquals("car,automobile", synonymSet.getSynonyms());
+		Assert.assertEquals("id", synonymSet.getSynonymSetDocumentId());
 	}
 
 	@Test
-	public void testFetchOptionalWithNullId() {
-		Optional<SynonymSet> synonymSetOptional =
-			_synonymSetIndexReaderImpl.fetchOptional(
-				Mockito.mock(SynonymSetIndexName.class), null);
-
-		Assert.assertFalse(synonymSetOptional.isPresent());
+	public void testFetchWithNullId() {
+		Assert.assertNull(
+			_synonymSetIndexReaderImpl.fetch(
+				Mockito.mock(SynonymSetIndexName.class), null));
 	}
 
 	@Test
@@ -109,12 +98,12 @@ public class SynonymSetIndexReaderImplTest extends BaseSynonymsWebTestCase {
 	public void testSearch() {
 		setUpSearchEngineAdapter(setUpSearchHits("car,automobile"));
 
-		List<SynonymSet> synonymSetList = _synonymSetIndexReaderImpl.search(
+		List<SynonymSet> synonymSets = _synonymSetIndexReaderImpl.search(
 			Mockito.mock(SynonymSetIndexName.class));
 
-		Assert.assertEquals(1, synonymSetList.size(), 0.0);
+		Assert.assertEquals(1, synonymSets.size(), 0.0);
 
-		SynonymSet synonymSet = synonymSetList.get(0);
+		SynonymSet synonymSet = synonymSets.get(0);
 
 		Assert.assertEquals("car,automobile", synonymSet.getSynonyms());
 		Assert.assertEquals("id", synonymSet.getSynonymSetDocumentId());

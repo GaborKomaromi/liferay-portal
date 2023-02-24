@@ -15,6 +15,7 @@
 package com.liferay.portal.search.facet.faceted.searcher.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Hits;
@@ -87,6 +88,24 @@ public class FacetedSearcherTest extends BaseFacetedSearcherTestCase {
 
 		assertSearchGroupIdsUnset(
 			prefix, Collections.<String, String>emptyMap());
+	}
+
+	@Test
+	public void testSearchByQuotedRegexKeywords() throws Exception {
+		Group group = userSearchFixture.addGroup();
+
+		String tag = randomString();
+
+		User user = addUser(group, tag);
+
+		String[] regexSymbols = {"(", ")", "*", "[", "]", "{", "}"};
+
+		for (String regexSymbol : regexSymbols) {
+			assertTags(
+				tag, toMap(user, tag),
+				getSearchContext(
+					StringBundler.concat("\"", tag, regexSymbol, "\"")));
+		}
 	}
 
 	protected static String randomString() {

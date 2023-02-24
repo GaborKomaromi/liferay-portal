@@ -46,9 +46,4 @@ public class DefaultObjectLayoutExceptionMapper
 			defaultObjectLayoutException.getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

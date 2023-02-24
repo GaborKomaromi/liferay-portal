@@ -38,26 +38,85 @@ List<NavigationItem> navigationItems = localizedItemSelectorRendering.getNavigat
 		</div>
 	</c:when>
 	<c:otherwise>
-		<c:if test="<%= navigationItems.size() > 1 %>">
-			<clay:navigation-bar
-				cssClass="border-bottom"
-				inverted="<%= false %>"
-				navigationItems="<%= navigationItems %>"
-			/>
-		</c:if>
-
 		<c:choose>
-			<c:when test='<%= ParamUtil.getBoolean(request, "showGroupSelector") %>'>
-				<liferay-item-selector:group-selector />
+			<c:when test="<%= navigationItems.size() > 1 %>">
+				<c:choose>
+					<c:when test="<%= navigationItems.size() <= 5 %>">
+						<clay:navigation-bar
+							cssClass="border-bottom"
+							inverted="<%= false %>"
+							navigationItems="<%= navigationItems %>"
+						/>
+
+						<liferay-util:include page="/view_item_selector.jsp" servletContext="<%= application %>" />
+					</c:when>
+					<c:otherwise>
+
+						<%
+						NavigationItem activeNavigationItem = null;
+						%>
+
+						<clay:container-fluid
+							cssClass="container-view"
+						>
+							<clay:row>
+								<clay:col
+									lg="3"
+								>
+									<nav class="menubar menubar-transparent menubar-vertical-expand-lg">
+										<ul class="mb-2 nav nav-stacked">
+
+											<%
+											for (NavigationItem navigationItem : navigationItems) {
+												if (GetterUtil.getBoolean(navigationItem.get("active"))) {
+													activeNavigationItem = navigationItem;
+												}
+											%>
+
+												<li class="nav-item">
+													<a class="d-flex nav-link <%= GetterUtil.getBoolean(navigationItem.get("active")) ? "active" : StringPool.BLANK %>" href="<%= GetterUtil.getString(navigationItem.get("href")) %>">
+														<span class="text-truncate"><%= GetterUtil.getString(navigationItem.get("label")) %></span>
+													</a>
+												</li>
+
+											<%
+											}
+											%>
+
+										</ul>
+									</nav>
+								</clay:col>
+
+								<clay:col
+									lg="9"
+								>
+									<clay:sheet
+										size="full"
+									>
+										<c:if test="<%= activeNavigationItem != null %>">
+											<h2 class="sheet-title">
+												<clay:content-row
+													verticalAlign="center"
+												>
+													<clay:content-col>
+														<%= GetterUtil.getString(activeNavigationItem.get("label")) %>
+													</clay:content-col>
+												</clay:content-row>
+											</h2>
+										</c:if>
+
+										<clay:sheet-section>
+											<liferay-util:include page="/view_item_selector.jsp" servletContext="<%= application %>" />
+										</clay:sheet-section>
+									</clay:sheet>
+								</clay:col>
+							</clay:row>
+						</clay:container-fluid>
+					</c:otherwise>
+				</c:choose>
 			</c:when>
 			<c:otherwise>
-
-				<%
-				ItemSelectorViewRenderer itemSelectorViewRenderer = localizedItemSelectorRendering.getSelectedItemSelectorViewRenderer();
-
-				itemSelectorViewRenderer.renderHTML(pageContext);
-				%>
-
+				<liferay-util:include page="/view_item_selector.jsp" servletContext="<%= application %>" />
 			</c:otherwise>
 		</c:choose>
 	</c:otherwise>

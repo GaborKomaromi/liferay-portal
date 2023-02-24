@@ -47,9 +47,4 @@ public class ObjectFieldListTypeDefinitionIdExceptionMapper
 			objectFieldListTypeDefinitionIdException.getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

@@ -126,19 +126,26 @@ NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
 			<li class="page-item <%= (cur > 1) ? StringPool.BLANK : "disabled" %>">
 				<c:choose>
 					<c:when test="<%= cur > 1 %>">
-						<a class="page-link" href="<%= _getHREF(formName, namespace + curParam, cur - 1, jsCall, url, urlAnchor) %>" onclick="<%= forcePost ? _getOnClick(namespace, curParam, cur -1) : "" %>">
+						<a class="lfr-portal-tooltip page-link" href="<%= _getHREF(formName, namespace + curParam, cur - 1, jsCall, url, urlAnchor) %>" onclick="<%= forcePost ? _getOnClick(namespace, curParam, cur -1) : "" %>" title="<%= LanguageUtil.get(request, "previous-page") %>">
 					</c:when>
 					<c:otherwise>
-						<a class="page-link">
+						<div class="page-link">
 					</c:otherwise>
 				</c:choose>
 
 					<liferay-ui:icon
 						icon='<%= PortalUtil.isRightToLeft(request) ? "angle-right" : "angle-left" %>'
 						markupView="lexicon"
-						message="previous-page"
 					/>
-				</a>
+
+				<c:choose>
+					<c:when test="<%= cur > 1 %>">
+						</a>
+					</c:when>
+					<c:otherwise>
+						</div>
+					</c:otherwise>
+				</c:choose>
 			</li>
 
 			<c:choose>
@@ -339,19 +346,26 @@ NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
 			<li class="page-item <%= (cur < pages) ? StringPool.BLANK : "disabled" %>">
 				<c:choose>
 					<c:when test="<%= cur < pages %>">
-						<a class="page-link" href="<%= _getHREF(formName, namespace + curParam, cur + 1, jsCall, url, urlAnchor) %>" onclick="<%= forcePost ? _getOnClick(namespace, curParam, cur + 1) : "" %>">
+						<a class="lfr-portal-tooltip page-link" href="<%= _getHREF(formName, namespace + curParam, cur + 1, jsCall, url, urlAnchor) %>" onclick="<%= forcePost ? _getOnClick(namespace, curParam, cur + 1) : "" %>" title="<%= LanguageUtil.get(request, "next-page") %>">
 					</c:when>
 					<c:otherwise>
-						<a class="page-link">
+						<div class="page-link">
 					</c:otherwise>
 				</c:choose>
 
 					<liferay-ui:icon
 						icon='<%= PortalUtil.isRightToLeft(request) ? "angle-left" : "angle-right" %>'
 						markupView="lexicon"
-						message="next-page"
 					/>
-				</a>
+
+				<c:choose>
+					<c:when test="<%= cur < pages %>">
+						</a>
+					</c:when>
+					<c:otherwise>
+						</div>
+					</c:otherwise>
+				</c:choose>
 			</li>
 		</ul>
 	</div>

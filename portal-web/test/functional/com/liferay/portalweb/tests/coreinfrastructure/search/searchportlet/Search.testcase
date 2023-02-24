@@ -1302,6 +1302,10 @@ definition {
 
 	@priority = 3
 	test CanOrderFolderFacetTerms {
+		JSONFolder.moveFolderToTrash(
+			folderName = "Provided by Liferay",
+			groupName = "Guest");
+
 		for (var folder : list "Product,Engineering,2021,2022") {
 			JSONFolder.addFolder(
 				dmFolderName = ${folder},
@@ -1523,6 +1527,10 @@ definition {
 	@description = "This is a use case for LPS-162049. When configuring the Type Facet, I can choose from different ordering options so that facet terms are displayed according to the sort strategy"
 	@priority = 3
 	test CanOrderTypeFacetTerms {
+		JSONFolder.moveFolderToTrash(
+			folderName = "Provided by Liferay",
+			groupName = "Guest");
+
 		task ("Add some Wiki Page examples") {
 			for (var wikiNumber : list "1,2,3,4") {
 				JSONWiki.addWikiPage(
@@ -1533,18 +1541,22 @@ definition {
 			}
 		}
 
-		task ("Add two new Pages") {
-			for (var quantity : list "1,2") {
+		task ("Add Pages and Documents") {
+			for (var count : list "1,2") {
 				JSONLayout.addPublicLayout(
 					groupName = "Guest",
-					layoutName = "Test Page ${quantity}");
+					layoutName = "Test Page ${count}");
+
+				JSONDocument.addFile(
+					dmDocumentTitle = "DM Document Title ${count}",
+					groupName = "Guest");
 			}
 		}
 
 		SearchPortlets.searchEmbedded(searchTerm = "test");
 
 		task ("Assert that the Type facet sorts by term frequency descending by default") {
-			SearchFacetPortlet.viewFacetItemsSpecificOrder(facetList = "Document,Wiki Page,Page,User");
+			SearchFacetPortlet.viewFacetItemsSpecificOrder(facetList = "Wiki Page,Page,Document,User");
 		}
 
 		task ("Assert that the Type facet values are correct when sorted by term frequency ascending") {
@@ -1554,7 +1566,7 @@ definition {
 
 			Refresh();
 
-			SearchFacetPortlet.viewFacetItemsSpecificOrder(facetList = "User,Page,Wiki Page,Document");
+			SearchFacetPortlet.viewFacetItemsSpecificOrder(facetList = "User,Document,Page,Wiki Page");
 		}
 
 		task ("Assert that the Type facet values are correct when sorted by term value ascending") {
@@ -2031,6 +2043,36 @@ definition {
 
 			AssertElementNotPresent(locator1 = "xpath=(//li[contains(@class,'list-group-item') and contains(.,'Test Test')][.//span[@class='subtext-item' and contains(.,'User')]])[2]");
 		}
+	}
+
+	@priority = 3
+	test FolderFacetEntryPresentAfterSelectingCategoryFacetEntry {
+		JSONCategory.addVocabulary(
+			groupName = "Guest",
+			title = "Vocabulary");
+
+		var categoryId = JSONCategory.addCategory(
+			groupName = "Guest",
+			title = "fuji",
+			vocabularyName = "Vocabulary");
+
+		JSONFolder.addFolder(
+			dmFolderName = "fruit",
+			groupName = "Guest");
+
+		JSONDocument.addFile(
+			assetCategoryIds = ${categoryId},
+			dmDocumentTitle = "apple",
+			folderName = "fruit",
+			groupName = "Guest");
+
+		SearchPortlets.searchEmbedded(searchTerm = "apple");
+
+		SearchFacetPortlet.checkFacet(facetValueName = "fuji");
+
+		AssertElementPresent(
+			checkboxName = "fruit",
+			locator1 = "Checkbox#ANY_CHECKBOX");
 	}
 
 	@priority = 3

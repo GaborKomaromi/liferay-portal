@@ -52,11 +52,6 @@ public class RequiredObjectFieldExceptionMapper
 				requiredObjectFieldException.getMessageKey()));
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 	@Context
 	private AcceptLanguage _acceptLanguage;
 

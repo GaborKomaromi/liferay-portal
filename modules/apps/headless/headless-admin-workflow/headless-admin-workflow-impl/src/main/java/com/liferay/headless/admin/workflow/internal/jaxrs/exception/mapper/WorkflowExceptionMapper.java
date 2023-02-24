@@ -43,9 +43,4 @@ public class WorkflowExceptionMapper
 			Response.Status.BAD_REQUEST, workflowException.getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

@@ -49,9 +49,4 @@ public class DuplicateNotificationTemplateExternalReferenceCodeExceptionMapper
 				getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

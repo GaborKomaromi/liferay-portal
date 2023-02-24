@@ -46,9 +46,4 @@ public class DuplicateListTypeEntryExceptionMapper
 			duplicateListTypeEntryException.getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.tools.ToolsUtil;
 import com.liferay.source.formatter.check.util.BNDSourceUtil;
+import com.liferay.source.formatter.check.util.JavaSourceUtil;
 import com.liferay.source.formatter.util.FileUtil;
 import com.liferay.source.formatter.util.SourceFormatterUtil;
 
@@ -48,7 +49,7 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 			String fileName, String absolutePath, String content)
 		throws IOException {
 
-		if (!fileName.endsWith("portal.properties")) {
+		if (!absolutePath.endsWith("/portal-impl/src/portal.properties")) {
 			return content;
 		}
 
@@ -60,7 +61,10 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 
 		List<String> fileNames = SourceFormatterUtil.filterFileNames(
 			_allFileNames, new String[] {"**/test/**"},
-			new String[] {"**/bnd.bnd", "**/*.java"},
+			new String[] {
+				"**/bnd.bnd", "**/*.java", "**/*.js", "**/*.jsp", "**/*.jspf",
+				"**/*.ts", "**/*.tsx"
+			},
 			getSourceFormatterExcludes(), true);
 
 		for (String fileName : fileNames) {
@@ -80,15 +84,14 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 
 				featureFlags.add(liferaySiteInitializerFeatureFlag);
 			}
-			else {
-				if (!fileContent.contains("feature.flag")) {
-					continue;
-				}
-
+			else if (fileName.endsWith(".java")) {
 				featureFlags.addAll(
 					_getFeatureFlags(fileContent, _featureFlagPattern1));
+				featureFlags.addAll(_getFeatureFlags(fileContent));
+			}
+			else {
 				featureFlags.addAll(
-					_getFeatureFlags(fileContent, _featureFlagPattern2));
+					_getFeatureFlags(fileContent, _featureFlagPattern3));
 			}
 		}
 
@@ -147,6 +150,38 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 		return content;
 	}
 
+	private List<String> _getFeatureFlags(String content) {
+		List<String> featureFlags = new ArrayList<>();
+
+		Matcher matcher = _featureFlagPattern2.matcher(content);
+
+		while (matcher.find()) {
+			List<String> parameterList = JavaSourceUtil.getParameterList(
+				JavaSourceUtil.getMethodCall(content, matcher.start()));
+
+			if (parameterList.isEmpty()) {
+				return featureFlags;
+			}
+
+			String parameter = null;
+
+			if (parameterList.size() == 1) {
+				parameter = parameterList.get(0);
+			}
+			else {
+				parameter = parameterList.get(1);
+			}
+
+			if ((parameter != null) && parameter.endsWith(StringPool.QUOTE) &&
+				parameter.startsWith(StringPool.QUOTE)) {
+
+				featureFlags.add(StringUtil.unquote(parameter));
+			}
+		}
+
+		return featureFlags;
+	}
+
 	private List<String> _getFeatureFlags(String content, Pattern pattern) {
 		List<String> featureFlags = new ArrayList<>();
 
@@ -160,9 +195,11 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 	}
 
 	private static final Pattern _featureFlagPattern1 = Pattern.compile(
-		"\"feature\\.flag\\.(.+?)\"");
-	private static final Pattern _featureFlagPattern2 = Pattern.compile(
 		"\\.feature\\.flag=(.+?)\"");
+	private static final Pattern _featureFlagPattern2 = Pattern.compile(
+		"FeatureFlagManagerUtil\\.isEnabled\\(");
+	private static final Pattern _featureFlagPattern3 = Pattern.compile(
+		"Liferay\\.FeatureFlags\\['(.+?)'\\]");
 	private static final Pattern _featureFlagsPattern = Pattern.compile(
 		"(\n|\\A)##\n## Feature Flag\n##(\n\n[\\s\\S]*?)(?=(\n\n##|\\Z))");
 

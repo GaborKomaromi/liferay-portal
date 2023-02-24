@@ -14,10 +14,8 @@
 
 package com.liferay.feature.flag.web.internal.company.feature.flags;
 
-import com.liferay.feature.flag.web.internal.manager.FeatureFlagPreferencesManager;
 import com.liferay.portal.instance.lifecycle.Clusterable;
 import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
-import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.CompanyConstants;
 
@@ -40,15 +38,14 @@ import org.osgi.service.component.annotations.Reference;
 public class CompanyFeatureFlagsProvider
 	implements Clusterable, PortalInstanceLifecycleListener {
 
-	public CompanyFeatureFlags getCompanyFeatureFlags(long companyId) {
-		return _companyFeatureFlagsMap.get(companyId);
+	public CompanyFeatureFlags getOrCreateCompanyFeatureFlags(long companyId) {
+		return _companyFeatureFlagsMap.computeIfAbsent(
+			companyId, _companyFeatureFlagsFactory::create);
 	}
 
 	@Override
 	public void portalInstanceRegistered(Company company) {
-		_companyFeatureFlagsMap.put(
-			company.getCompanyId(),
-			_companyFeatureFlagsFactory.create(company.getCompanyId()));
+		getOrCreateCompanyFeatureFlags(company.getCompanyId());
 	}
 
 	@Override
@@ -59,14 +56,12 @@ public class CompanyFeatureFlagsProvider
 	public <T> T withCompanyFeatureFlags(
 		long companyId, Function<CompanyFeatureFlags, T> function) {
 
-		return function.apply(_companyFeatureFlagsMap.get(companyId));
+		return function.apply(getOrCreateCompanyFeatureFlags(companyId));
 	}
 
 	@Activate
 	protected void activate() {
-		_companyFeatureFlagsMap.put(
-			CompanyConstants.SYSTEM,
-			_companyFeatureFlagsFactory.create(CompanyConstants.SYSTEM));
+		getOrCreateCompanyFeatureFlags(CompanyConstants.SYSTEM);
 	}
 
 	@Reference
@@ -74,11 +69,5 @@ public class CompanyFeatureFlagsProvider
 
 	private final Map<Long, CompanyFeatureFlags> _companyFeatureFlagsMap =
 		new ConcurrentHashMap<>();
-
-	@Reference
-	private FeatureFlagPreferencesManager _featureFlagPreferencesManager;
-
-	@Reference
-	private Language _language;
 
 }

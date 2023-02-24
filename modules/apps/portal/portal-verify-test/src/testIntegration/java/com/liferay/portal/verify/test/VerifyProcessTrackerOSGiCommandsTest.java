@@ -24,7 +24,6 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.upgrade.DummyUpgradeStep;
 import com.liferay.portal.kernel.upgrade.UpgradeStep;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.verify.VerifyProcess;
@@ -210,8 +209,6 @@ public class VerifyProcessTrackerOSGiCommandsTest {
 					VerifyProcess.class, _initialDeploymentVerifyProcess,
 					HashMapDictionaryBuilder.<String, Object>put(
 						"initial.deployment", true
-					).put(
-						"verify.process.name", _VERIFY_PROCESS_NAME
 					).build());
 
 		return initialDeploymentVerifyProcessRegistration::unregister;
@@ -224,8 +221,6 @@ public class VerifyProcessTrackerOSGiCommandsTest {
 					VerifyProcess.class, _runOnPortalUpgradeVerifyProcess,
 					HashMapDictionaryBuilder.<String, Object>put(
 						"run.on.portal.upgrade", true
-					).put(
-						"verify.process.name", "verify.process.name"
 					).build());
 
 		return runOnPortalUpgradeVerifyProcessRegistration::unregister;
@@ -234,9 +229,7 @@ public class VerifyProcessTrackerOSGiCommandsTest {
 	private SafeCloseable _registerVerifyProcess() {
 		ServiceRegistration<VerifyProcess> verifyProcessRegistration =
 			_bundleContext.registerService(
-				VerifyProcess.class, _verifyProcess,
-				MapUtil.singletonDictionary(
-					"verify.process.name", "verify.process.name"));
+				VerifyProcess.class, _verifyProcess, null);
 
 		return verifyProcessRegistration::unregister;
 	}
@@ -266,8 +259,6 @@ public class VerifyProcessTrackerOSGiCommandsTest {
 
 		return () -> StartupHelperUtil.setUpgrading(false);
 	}
-
-	private static final String _VERIFY_PROCESS_NAME = "verify.process.name";
 
 	private static BundleContext _bundleContext;
 	private static String _symbolicName;

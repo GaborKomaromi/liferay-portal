@@ -77,14 +77,14 @@ function refresh_sample_workspace {
 
 	cp ${temp_dir}/configs/local/portal-ext.properties sample-workspace/configs/local
 
-	mkdir modules
+	mkdir -p sample-workspace/modules
 
-	echo "Client extensions are the recommended way of customizing Liferay. Modules and" > modules/README.txt
-	echo "themes are supported for backwards compatibility." >> modules/README.txt
+	echo "Client extensions are the recommended way of customizing Liferay. Modules and" > sample-workspace/modules/README.txt
+	echo "themes are supported for backwards compatibility." >> sample-workspace/modules/README.txt
 
-	mkdir themes
+	mkdir -p sample-workspace/themes
 
-	cp modules/README.txt themes
+	cp sample-workspace/modules/README.txt sample-workspace/themes
 
 	#
 	# Client Extension: Sample Custom Element 2

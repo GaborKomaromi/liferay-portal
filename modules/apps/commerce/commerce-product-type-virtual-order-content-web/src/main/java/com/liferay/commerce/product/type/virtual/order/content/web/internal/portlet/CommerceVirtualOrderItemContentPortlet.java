@@ -17,8 +17,9 @@ package com.liferay.commerce.product.type.virtual.order.content.web.internal.por
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.product.type.virtual.order.constants.CommerceVirtualOrderPortletKeys;
 import com.liferay.commerce.product.type.virtual.order.content.web.internal.display.context.CommerceVirtualOrderItemContentDisplayContext;
+import com.liferay.commerce.product.type.virtual.order.content.web.internal.security.resource.permission.CommerceVirtualOrderItemPermission;
 import com.liferay.commerce.product.type.virtual.order.service.CommerceVirtualOrderItemLocalService;
-import com.liferay.commerce.product.type.virtual.service.CPDefinitionVirtualSettingService;
+import com.liferay.commerce.product.type.virtual.service.CPDefinitionVirtualSettingLocalService;
 import com.liferay.commerce.product.util.CPDefinitionHelper;
 import com.liferay.commerce.product.util.CPInstanceHelper;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -60,7 +61,7 @@ import org.osgi.service.component.annotations.Reference;
 		"javax.portlet.security-role-ref=power-user,user",
 		"javax.portlet.version=3.0"
 	},
-	service = {CommerceVirtualOrderItemContentPortlet.class, Portlet.class}
+	service = Portlet.class
 )
 public class CommerceVirtualOrderItemContentPortlet extends MVCPortlet {
 
@@ -75,7 +76,9 @@ public class CommerceVirtualOrderItemContentPortlet extends MVCPortlet {
 					new CommerceVirtualOrderItemContentDisplayContext(
 						_commerceChannelLocalService,
 						_commerceVirtualOrderItemLocalService,
-						_cpDefinitionHelper, _cpDefinitionVirtualSettingService,
+						_commerceVirtualOrderItemPermission,
+						_cpDefinitionHelper,
+						_cpDefinitionVirtualSettingLocalService,
 						_cpInstanceHelper,
 						_portal.getHttpServletRequest(renderRequest));
 
@@ -101,11 +104,15 @@ public class CommerceVirtualOrderItemContentPortlet extends MVCPortlet {
 		_commerceVirtualOrderItemLocalService;
 
 	@Reference
+	private CommerceVirtualOrderItemPermission
+		_commerceVirtualOrderItemPermission;
+
+	@Reference
 	private CPDefinitionHelper _cpDefinitionHelper;
 
 	@Reference
-	private CPDefinitionVirtualSettingService
-		_cpDefinitionVirtualSettingService;
+	private CPDefinitionVirtualSettingLocalService
+		_cpDefinitionVirtualSettingLocalService;
 
 	@Reference
 	private CPInstanceHelper _cpInstanceHelper;

@@ -23,10 +23,13 @@ import com.liferay.portal.kernel.search.ParseException;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.search.generic.MatchQuery;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.query.QueryHelper;
 import com.liferay.portal.search.spi.model.query.contributor.KeywordQueryContributor;
 import com.liferay.portal.search.spi.model.query.contributor.helper.KeywordQueryContributorHelper;
+
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -73,29 +76,8 @@ public class DLFileEntryKeywordQueryContributor
 			try {
 				BooleanQuery fileNameBooleanQuery = new BooleanQueryImpl();
 
-				String exactMatch = StringUtils.substringBetween(
-					keywords, StringPool.QUOTE);
-
-				if (Validator.isNotNull(exactMatch)) {
-					String notExactKeyword = keywords.replaceFirst(
-						StringPool.QUOTE + exactMatch + StringPool.QUOTE, "");
-
-					fileNameBooleanQuery.add(
-						_getMatchQuery(
-							"fileName", exactMatch, MatchQuery.Type.PHRASE),
-						BooleanClauseOccur.MUST);
-
-					if (Validator.isNotNull(notExactKeyword)) {
-						fileNameBooleanQuery.add(
-							_getShouldBooleanQuery(notExactKeyword),
-							BooleanClauseOccur.MUST);
-					}
-				}
-				else {
-					fileNameBooleanQuery.add(
-						_getShouldBooleanQuery(keywords),
-						BooleanClauseOccur.MUST);
-				}
+				_addKeywordsToFileNameBooleanQuery(
+					fileNameBooleanQuery, keywords);
 
 				booleanQuery.add(
 					_getMatchQuery(
@@ -118,6 +100,34 @@ public class DLFileEntryKeywordQueryContributor
 
 	@Reference
 	protected QueryHelper queryHelper;
+
+	private void _addKeywordsToFileNameBooleanQuery(
+			BooleanQuery fileNameBooleanQuery, String keywords)
+		throws ParseException {
+
+		String exactMatch = StringUtils.substringBetween(
+			keywords, StringPool.QUOTE);
+
+		if (Validator.isNull(exactMatch)) {
+			fileNameBooleanQuery.add(
+				_getShouldBooleanQuery(StringUtil.trim(keywords)),
+				BooleanClauseOccur.MUST);
+		}
+		else {
+			fileNameBooleanQuery.add(
+				_getMatchQuery("fileName", exactMatch, MatchQuery.Type.PHRASE),
+				BooleanClauseOccur.MUST);
+
+			String remainingKeywords = keywords.replaceFirst(
+				Pattern.quote(StringPool.QUOTE + exactMatch + StringPool.QUOTE),
+				"");
+
+			if (Validator.isNotNull(remainingKeywords)) {
+				_addKeywordsToFileNameBooleanQuery(
+					fileNameBooleanQuery, remainingKeywords);
+			}
+		}
+	}
 
 	private MatchQuery _getMatchQuery(
 		String field, String keywords, MatchQuery.Type phrase) {

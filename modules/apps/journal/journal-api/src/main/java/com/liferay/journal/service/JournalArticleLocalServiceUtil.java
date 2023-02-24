@@ -1912,6 +1912,12 @@ public class JournalArticleLocalServiceUtil {
 		return getService().getExportActionableDynamicQuery(portletDataContext);
 	}
 
+	public static List<Long> getGroupIdsByUrlTitle(
+		long companyId, String urlTitle) {
+
+		return getService().getGroupIdsByUrlTitle(companyId, urlTitle);
+	}
+
 	public static
 		com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery
 			getIndexableActionableDynamicQuery() {

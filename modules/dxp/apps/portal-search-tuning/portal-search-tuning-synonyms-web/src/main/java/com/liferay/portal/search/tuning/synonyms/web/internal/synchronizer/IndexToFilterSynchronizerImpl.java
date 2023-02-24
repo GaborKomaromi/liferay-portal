@@ -14,14 +14,12 @@
 
 package com.liferay.portal.search.tuning.synonyms.web.internal.synchronizer;
 
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 import com.liferay.portal.search.tuning.synonyms.web.internal.filter.SynonymSetFilterWriter;
 import com.liferay.portal.search.tuning.synonyms.web.internal.filter.name.SynonymSetFilterNameHolder;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSet;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexReader;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,32 +36,13 @@ public class IndexToFilterSynchronizerImpl
 		SynonymSetIndexName synonymSetIndexName, String companyIndexName,
 		boolean deletion) {
 
-		_updateFilters(
-			companyIndexName, _getSynonymFromIndex(synonymSetIndexName),
-			deletion);
-	}
-
-	private String[] _getSynonymFromIndex(
-		SynonymSetIndexName synonymSetIndexName) {
-
-		List<SynonymSet> synonymSets = _synonymSetIndexReader.search(
-			synonymSetIndexName);
-
-		Stream<SynonymSet> stream = synonymSets.stream();
-
-		return stream.map(
-			SynonymSet::getSynonyms
-		).toArray(
-			String[]::new
-		);
-	}
-
-	private void _updateFilters(
-		String companyIndexName, String[] synonyms, boolean deletion) {
-
 		for (String filterName : _synonymSetFilterNameHolder.getFilterNames()) {
 			_synonymSetFilterWriter.updateSynonymSets(
-				companyIndexName, filterName, synonyms, deletion);
+				companyIndexName, filterName,
+				TransformUtil.transformToArray(
+					_synonymSetIndexReader.search(synonymSetIndexName),
+					SynonymSet::getSynonyms, String.class),
+				deletion);
 		}
 	}
 

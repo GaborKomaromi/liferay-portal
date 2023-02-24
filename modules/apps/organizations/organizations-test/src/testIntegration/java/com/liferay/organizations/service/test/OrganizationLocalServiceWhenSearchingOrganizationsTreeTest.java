@@ -15,6 +15,7 @@
 package com.liferay.organizations.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.OrganizationConstants;
@@ -43,7 +44,6 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.comparator.OrganizationNameComparator;
 import com.liferay.portal.search.test.util.AssertUtils;
-import com.liferay.portal.search.test.util.SearchStreamUtil;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -53,9 +53,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -176,35 +173,16 @@ public class OrganizationLocalServiceWhenSearchingOrganizationsTreeTest {
 	}
 
 	protected String toString(Organization organization) {
-		Map<String, Function<Organization, Object>> map = new LinkedHashMap<>(
-			organization.getAttributeGetterFunctions());
+		Map<String, Object> modelAttributes = organization.getModelAttributes();
 
-		map.remove("createDate");
-		map.remove("modifiedDate");
+		modelAttributes.remove("createDate");
+		modelAttributes.remove("modifiedDate");
 
-		Stream<Map.Entry<String, Function<Organization, Object>>> stream =
-			SearchStreamUtil.stream(map.entrySet());
-
-		return String.valueOf(
-			stream.collect(
-				Collectors.toMap(
-					Map.Entry::getKey,
-					entry -> {
-						Function<Organization, Object> function =
-							entry.getValue();
-
-						return String.valueOf(function.apply(organization));
-					})));
+		return String.valueOf(modelAttributes);
 	}
 
 	protected List<String> toStringList(List<Organization> organizations) {
-		Stream<Organization> stream = organizations.stream();
-
-		return stream.map(
-			this::toString
-		).collect(
-			Collectors.toList()
-		);
+		return TransformUtil.transform(organizations, this::toString);
 	}
 
 	@Inject(

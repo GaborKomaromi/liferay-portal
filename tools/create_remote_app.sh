@@ -174,9 +174,9 @@ function random_letter {
 
 function write_client_extension {
 	echo "assemble:" > client-extension.yaml
-	echo "    - from: build/" >> client-extension.yaml
+	echo "    - from: build" >> client-extension.yaml
 	echo "      include: \"static/**/*\"" >> client-extension.yaml
-	echo "      into: static/" >> client-extension.yaml
+	echo "      into: static" >> client-extension.yaml
 	echo "${CUSTOM_ELEMENT_NAME}:" >> client-extension.yaml
 	echo "    cssURLs:" >> client-extension.yaml
 	echo "        - static/css/main.*.css" >> client-extension.yaml

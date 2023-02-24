@@ -41,6 +41,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemBuilder;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -71,7 +72,6 @@ import com.liferay.taglib.util.CustomAttributesUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -125,7 +125,11 @@ public class CPDefinitionsDisplayContext
 		).setParameter(
 			"checkedCommerceAccountGroupIds",
 			StringUtil.merge(
-				getCommerceAccountGroupRelCommerceAccountGroupIds())
+				TransformUtil.transformToLongArray(
+					_commerceAccountGroupRelService.getCommerceAccountGroupRels(
+						CPDefinition.class.getName(), getCPDefinitionId(),
+						QueryUtil.ALL_POS, QueryUtil.ALL_POS, null),
+					CommerceAccountGroupRel::getCommerceAccountGroupId))
 		).buildString();
 	}
 
@@ -186,7 +190,12 @@ public class CPDefinitionsDisplayContext
 				commerceChannelItemSelectorCriterion)
 		).setParameter(
 			"checkedCommerceChannelIds",
-			StringUtil.merge(getCommerceChannelRelCommerceChannelIds())
+			StringUtil.merge(
+				TransformUtil.transformToLongArray(
+					_commerceChannelRelService.getCommerceChannelRels(
+						CPDefinition.class.getName(), getCPDefinitionId(), null,
+						QueryUtil.ALL_POS, QueryUtil.ALL_POS),
+					CommerceChannelRel::getCommerceChannelId))
 		).buildString();
 	}
 
@@ -214,41 +223,10 @@ public class CPDefinitionsDisplayContext
 		).build();
 	}
 
-	public long[] getCommerceAccountGroupRelCommerceAccountGroupIds()
-		throws PortalException {
-
-		List<CommerceAccountGroupRel> commerceAccountGroupRels =
-			_commerceAccountGroupRelService.getCommerceAccountGroupRels(
-				CPDefinition.class.getName(), getCPDefinitionId(),
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
-
-		Stream<CommerceAccountGroupRel> stream =
-			commerceAccountGroupRels.stream();
-
-		return stream.mapToLong(
-			CommerceAccountGroupRel::getCommerceAccountGroupId
-		).toArray();
-	}
-
 	public List<CommerceCatalog> getCommerceCatalogs() throws PortalException {
 		return _commerceCatalogService.search(
 			cpRequestHelper.getCompanyId(), null, QueryUtil.ALL_POS,
 			QueryUtil.ALL_POS, null);
-	}
-
-	public long[] getCommerceChannelRelCommerceChannelIds()
-		throws PortalException {
-
-		List<CommerceChannelRel> commerceChannelRels =
-			_commerceChannelRelService.getCommerceChannelRels(
-				CPDefinition.class.getName(), getCPDefinitionId(), null,
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-
-		Stream<CommerceChannelRel> stream = commerceChannelRels.stream();
-
-		return stream.mapToLong(
-			CommerceChannelRel::getCommerceChannelId
-		).toArray();
 	}
 
 	public String getCPDefinitionThumbnailURL() throws Exception {

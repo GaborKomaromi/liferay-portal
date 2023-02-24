@@ -64,9 +64,4 @@ public class BaseOrderValidatorExceptionMapper
 			"CommerceOrderValidatorException");
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

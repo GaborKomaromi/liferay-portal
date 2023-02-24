@@ -49,9 +49,4 @@ public class DuplicateListTypeDefinitionExternalReferenceCodeExceptionMapper
 				getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

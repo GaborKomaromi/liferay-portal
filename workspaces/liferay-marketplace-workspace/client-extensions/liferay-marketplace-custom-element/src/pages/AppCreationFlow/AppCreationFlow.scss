@@ -1,0 +1,15 @@
+.app-creation-flow {
+	&-container {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	&-body {
+		display: flex;
+		flex-direction: row;
+		gap: 5rem;
+		justify-content: center;
+	}
+}

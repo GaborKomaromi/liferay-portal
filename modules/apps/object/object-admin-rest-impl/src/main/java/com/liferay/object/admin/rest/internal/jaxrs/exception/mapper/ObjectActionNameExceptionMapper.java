@@ -60,11 +60,6 @@ public class ObjectActionNameExceptionMapper
 			Response.Status.BAD_REQUEST, null, "ObjectActionNameException");
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 	@Context
 	private AcceptLanguage _acceptLanguage;
 

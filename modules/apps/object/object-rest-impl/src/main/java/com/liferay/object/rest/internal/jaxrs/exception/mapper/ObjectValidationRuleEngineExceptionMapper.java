@@ -49,11 +49,6 @@ public class ObjectValidationRuleEngineExceptionMapper
 			_language.get(_acceptLanguage.getPreferredLocale(), messageKey));
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 	@Context
 	private AcceptLanguage _acceptLanguage;
 

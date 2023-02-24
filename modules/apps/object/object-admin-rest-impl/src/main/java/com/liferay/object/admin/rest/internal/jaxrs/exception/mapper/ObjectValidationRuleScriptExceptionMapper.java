@@ -60,11 +60,6 @@ public class ObjectValidationRuleScriptExceptionMapper
 			"ObjectValidationRuleScriptException");
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 	@Context
 	private AcceptLanguage _acceptLanguage;
 

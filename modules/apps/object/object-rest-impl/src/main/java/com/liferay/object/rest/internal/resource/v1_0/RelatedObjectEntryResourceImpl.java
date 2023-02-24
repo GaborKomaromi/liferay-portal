@@ -14,6 +14,7 @@
 
 package com.liferay.object.rest.internal.resource.v1_0;
 
+import com.liferay.object.exception.NoSuchObjectDefinitionException;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.related.models.ObjectRelatedModelsProvider;
@@ -27,13 +28,12 @@ import com.liferay.object.service.ObjectRelationshipService;
 import com.liferay.object.system.JaxRsApplicationDescriptor;
 import com.liferay.object.system.SystemObjectDefinitionMetadata;
 import com.liferay.object.system.SystemObjectDefinitionMetadataRegistry;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.security.auth.GuestOrUserUtil;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
@@ -66,7 +66,7 @@ public class RelatedObjectEntryResourceImpl
 			String objectRelationshipName, Long relatedObjectEntryId)
 		throws Exception {
 
-		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-153324"))) {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-153324")) {
 			throw new NotFoundException();
 		}
 
@@ -106,7 +106,7 @@ public class RelatedObjectEntryResourceImpl
 			String objectRelationshipName, Pagination pagination)
 		throws Exception {
 
-		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-153324"))) {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-153324")) {
 			throw new NotFoundException();
 		}
 
@@ -146,7 +146,7 @@ public class RelatedObjectEntryResourceImpl
 			Pagination pagination)
 		throws Exception {
 
-		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-153324"))) {
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-153324")) {
 			throw new NotFoundException();
 		}
 
@@ -240,15 +240,28 @@ public class RelatedObjectEntryResourceImpl
 			ObjectRelationship objectRelationship)
 		throws Exception {
 
-		long objectDefinitionId1 = objectRelationship.getObjectDefinitionId1();
+		ObjectDefinition relatedObjectDefinition = null;
 
-		if (objectDefinitionId1 != objectDefinition.getObjectDefinitionId()) {
-			return _objectDefinitionLocalService.getObjectDefinition(
-				objectRelationship.getObjectDefinitionId1());
+		if (objectRelationship.getObjectDefinitionId1() !=
+				objectDefinition.getObjectDefinitionId()) {
+
+			relatedObjectDefinition =
+				_objectDefinitionLocalService.getObjectDefinition(
+					objectRelationship.getObjectDefinitionId1());
+		}
+		else {
+			relatedObjectDefinition =
+				_objectDefinitionLocalService.getObjectDefinition(
+					objectRelationship.getObjectDefinitionId2());
 		}
 
-		return _objectDefinitionLocalService.getObjectDefinition(
-			objectRelationship.getObjectDefinitionId2());
+		if (!relatedObjectDefinition.isActive()) {
+			throw new NoSuchObjectDefinitionException(
+				"No active object definition found for relationship " +
+					objectRelationship.getName());
+		}
+
+		return relatedObjectDefinition;
 	}
 
 	private ObjectEntry _getRelatedObjectEntry(

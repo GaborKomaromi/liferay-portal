@@ -171,6 +171,34 @@ definition {
 				vocabularyName = ${vocabularyName});
 		}
 
+		if (${enableExpirationDate} == "true") {
+			Panel.expandPanel(panel = "Expiration Date");
+
+			Uncheck(
+				checkboxName = "Never Expire",
+				locator1 = "Checkbox#ANY_CHECKBOX");
+
+			if (isSet(notificationDate)) {
+				var expirationDate = DateUtil.getDateOffsetByDays(${notificationDate}, "MM/dd/yyyy");
+
+				echo("## * expirationDate: ${expirationDate}");
+
+				Type(
+					locator1 = "TextInput#EXPIRATION_DATE",
+					value1 = ${expirationDate});
+			}
+
+			if (isSet(extendedMinutes)) {
+				var expirationDateTime = DateUtil.getDateOffsetByMinutes(${extendedMinutes}, "hh:mm a");
+
+				echo("## * expirationDateTime: ${expirationDateTime}");
+
+				Type(
+					locator1 = "TextInput#EXPIRATION_DATE_TIME",
+					value1 = ${expirationDateTime});
+			}
+		}
+
 		if (${kbWorkflowAction} == "Submit for Publication") {
 			ProductMenuHelper.closeProductMenu();
 
@@ -1476,6 +1504,13 @@ definition {
 		AssertElementNotPresent(locator1 = "KnowledgeBase#ARTICLE_TABLE_KB_GENERIC");
 	}
 
+	macro viewExpirationStatus {
+		AssertTextEquals(
+			key_kbArticleTitle = ${kbArticleTitle},
+			locator1 = "KnowledgeBase#ARTICLE_TABLE_EXPIRATION_STATUS",
+			value1 = ${kbExpirationStatus});
+	}
+
 	macro viewFieldRequiredAsterisk {
 		LexiconEntry.gotoAddMenuItem(menuItem = "Basic Article");
 
@@ -1630,6 +1665,12 @@ definition {
 		else if (${next} == "false") {
 			AssertElementNotPresent(locator1 = "KnowledgeBaseArticle#NEXT");
 		}
+	}
+
+	macro viewNoExpirationStatus {
+		AssertElementNotPresent(
+			key_kbArticleTitle = ${kbArticleTitle},
+			locator1 = "KnowledgeBase#ARTICLE_TABLE_EXPIRATION_STATUS");
 	}
 
 	macro viewNoHierarchyPG {

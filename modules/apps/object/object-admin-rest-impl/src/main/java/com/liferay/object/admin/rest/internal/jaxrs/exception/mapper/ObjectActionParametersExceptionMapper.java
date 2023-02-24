@@ -57,11 +57,6 @@ public class ObjectActionParametersExceptionMapper
 			"ObjectActionParametersException");
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 	private JSONArray _toJSONArray(Map<String, Object> messageKeys) {
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 

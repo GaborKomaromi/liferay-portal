@@ -17,6 +17,7 @@ package com.liferay.portal.verify.extender.internal.osgi.commands;
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.gogo.shell.logging.TeeLoggingUtil;
 import com.liferay.osgi.service.tracker.collections.EagerServiceTrackerCustomizer;
+import com.liferay.osgi.service.tracker.collections.map.ServiceReferenceMapper;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.events.StartupHelperUtil;
@@ -26,9 +27,11 @@ import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.model.ReleaseConstants;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.service.ReleaseLocalService;
+import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.NotificationThreadLocal;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
 import com.liferay.portal.upgrade.log.UpgradeLogContext;
 import com.liferay.portal.verify.VerifyException;
@@ -68,13 +71,15 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class VerifyProcessTrackerOSGiCommands {
 
-	@Descriptor("List latest execution result for a specific verify process")
-	public void check(String verifyProcessName) {
+	@Descriptor(
+		"List latest execution result for a module's verify process by symbolic name"
+	)
+	public void check(String bundleSymbolicName) {
 		VerifyProcess verifyProcess;
 
 		try {
 			verifyProcess = _getVerifyProcess(
-				_serviceTrackerMap, verifyProcessName);
+				_serviceTrackerMap, bundleSymbolicName);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			if (_log.isDebugEnabled()) {
@@ -82,10 +87,13 @@ public class VerifyProcessTrackerOSGiCommands {
 			}
 
 			System.out.println(
-				"No verify process with name " + verifyProcessName);
+				"No verify process exists for " + bundleSymbolicName);
 
 			return;
 		}
+
+		String message =
+			"Verify process " + ClassUtil.getClassName(verifyProcess);
 
 		Release release = _fetchRelease(verifyProcess);
 
@@ -93,40 +101,36 @@ public class VerifyProcessTrackerOSGiCommands {
 			(!release.isVerified() &&
 			 (release.getState() == ReleaseConstants.STATE_GOOD))) {
 
-			System.out.println(
-				verifyProcessName + " verify process has not executed");
+			System.out.println(message + " was not executed");
 		}
 		else {
 			if (release.isVerified()) {
-				System.out.println(
-					verifyProcessName + " verify process succeeded");
+				System.out.println(message + " succeeded");
 			}
 			else if (release.getState() ==
 						ReleaseConstants.STATE_VERIFY_FAILURE) {
 
-				System.out.println(
-					verifyProcessName + " verify process failed");
+				System.out.println(message + " failed");
 			}
 		}
 	}
 
 	@Descriptor("List latest execution result for all verify processes")
 	public void checkAll() {
-		for (String verifyProcessName : _serviceTrackerMap.keySet()) {
-			check(verifyProcessName);
+		for (String bundleSymbolicName : _serviceTrackerMap.keySet()) {
+			check(bundleSymbolicName);
 		}
 	}
 
-	@Descriptor("Execute a specific verify process")
-	public void execute(String verifyProcessName) {
+	@Descriptor("Execute a module's verify process by symbolic name")
+	public void execute(String bundleSymbolicName) {
 		TeeLoggingUtil.runWithTeeLogging(
 			() -> {
 				VerifyProcess verifyProcess = _getVerifyProcess(
-					_serviceTrackerMap, verifyProcessName);
+					_serviceTrackerMap, bundleSymbolicName);
 
 				_executeVerifyProcess(
-					verifyProcess, verifyProcessName,
-					_fetchRelease(verifyProcess));
+					verifyProcess, _fetchRelease(verifyProcess));
 			});
 	}
 
@@ -134,28 +138,32 @@ public class VerifyProcessTrackerOSGiCommands {
 	public void executeAll() {
 		TeeLoggingUtil.runWithTeeLogging(
 			() -> {
-				for (String verifyProcessName : _serviceTrackerMap.keySet()) {
+				for (String bundleSymbolicName : _serviceTrackerMap.keySet()) {
 					VerifyProcess verifyProcess = _getVerifyProcess(
-						_serviceTrackerMap, verifyProcessName);
+						_serviceTrackerMap, bundleSymbolicName);
 
 					_executeVerifyProcess(
-						verifyProcess, verifyProcessName,
-						_fetchRelease(verifyProcess));
+						verifyProcess, _fetchRelease(verifyProcess));
 				}
 			});
 	}
 
 	@Descriptor("List all registered verify processes")
 	public void list() {
-		for (String verifyProcessName : _serviceTrackerMap.keySet()) {
-			show(verifyProcessName);
+		for (String bundleSymbolicName : _serviceTrackerMap.keySet()) {
+			show(bundleSymbolicName);
 		}
 	}
 
-	@Descriptor("Show the verify process name if the verify process exists")
-	public void show(String verifyProcessName) {
+	@Descriptor(
+		"Show the verify process class name by a module's symbolic name"
+	)
+	public void show(String bundleSymbolicName) {
+		VerifyProcess verifyProcess;
+
 		try {
-			_getVerifyProcess(_serviceTrackerMap, verifyProcessName);
+			verifyProcess = _getVerifyProcess(
+				_serviceTrackerMap, bundleSymbolicName);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			if (_log.isDebugEnabled()) {
@@ -163,12 +171,16 @@ public class VerifyProcessTrackerOSGiCommands {
 			}
 
 			System.out.println(
-				"No verify process with name " + verifyProcessName);
+				"No verify process exists for " + bundleSymbolicName);
 
 			return;
 		}
 
-		System.out.println("Registered verify process " + verifyProcessName);
+		System.out.println(
+			StringBundler.concat(
+				"Registered verify process ",
+				ClassUtil.getClassName(verifyProcess), " for module ",
+				bundleSymbolicName));
 	}
 
 	@Activate
@@ -176,7 +188,20 @@ public class VerifyProcessTrackerOSGiCommands {
 		BundleContext bundleContext, Map<String, Object> properties) {
 
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
-			bundleContext, VerifyProcess.class, "verify.process.name",
+			bundleContext, VerifyProcess.class, null,
+			new ServiceReferenceMapper<String, VerifyProcess>() {
+
+				@Override
+				public void map(
+					ServiceReference<VerifyProcess> serviceReference,
+					Emitter<String> emitter) {
+
+					Bundle bundle = serviceReference.getBundle();
+
+					emitter.emit(bundle.getSymbolicName());
+				}
+
+			},
 			new EagerServiceTrackerCustomizer<VerifyProcess, VerifyProcess>() {
 
 				@Override
@@ -201,12 +226,7 @@ public class VerifyProcessTrackerOSGiCommands {
 							 serviceReference.getProperty(
 								 "run.on.portal.upgrade")))) {
 
-						_executeVerifyProcess(
-							verifyProcess,
-							String.valueOf(
-								serviceReference.getProperty(
-									"verify.process.name")),
-							release);
+						_executeVerifyProcess(verifyProcess, release);
 					}
 					else if (release == null) {
 						release = _releaseLocalService.createRelease(
@@ -266,8 +286,7 @@ public class VerifyProcessTrackerOSGiCommands {
 	}
 
 	private void _executeVerifyProcess(
-		VerifyProcess verifyProcess, String verifyProcessName,
-		Release release) {
+		VerifyProcess verifyProcess, Release release) {
 
 		NotificationThreadLocal.setEnabled(false);
 		StagingAdvicesThreadLocal.setEnabled(false);
@@ -290,7 +309,7 @@ public class VerifyProcessTrackerOSGiCommands {
 			}
 
 			System.out.println(
-				"Executing verify process registered for " + verifyProcessName);
+				"Executing verify " + ClassUtil.getClassName(verifyProcess));
 
 			try {
 				UpgradeLogContext.setContext(bundle.getSymbolicName());
@@ -327,14 +346,14 @@ public class VerifyProcessTrackerOSGiCommands {
 
 	private VerifyProcess _getVerifyProcess(
 		ServiceTrackerMap<String, VerifyProcess> verifyProcessTrackerMap,
-		String verifyProcessName) {
+		String bundleSymbolicName) {
 
 		VerifyProcess verifyProcess = verifyProcessTrackerMap.getService(
-			verifyProcessName);
+			bundleSymbolicName);
 
 		if (verifyProcess == null) {
 			throw new IllegalArgumentException(
-				"No verify processes with name " + verifyProcessName);
+				"No verify processes exists for " + bundleSymbolicName);
 		}
 
 		return verifyProcess;

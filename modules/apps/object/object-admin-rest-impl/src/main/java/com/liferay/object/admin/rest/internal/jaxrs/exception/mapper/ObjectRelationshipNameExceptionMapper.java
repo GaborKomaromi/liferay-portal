@@ -46,9 +46,4 @@ public class ObjectRelationshipNameExceptionMapper
 			objectRelationshipNameException.getMessage());
 	}
 
-	@Override
-	protected boolean isSanitize() {
-		return false;
-	}
-
 }

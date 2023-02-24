@@ -2044,6 +2044,14 @@ public class JournalArticleLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<Long> getGroupIdsByUrlTitle(
+		long companyId, String urlTitle) {
+
+		return _journalArticleLocalService.getGroupIdsByUrlTitle(
+			companyId, urlTitle);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery
 		getIndexableActionableDynamicQuery() {
 

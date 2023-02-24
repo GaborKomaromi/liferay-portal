@@ -1189,10 +1189,10 @@ public class EditAssetListDisplayContext {
 
 	private JSONArray _getAssetListEntrySegmentsEntryRelJSONArray() {
 		List<AssetListEntrySegmentsEntryRel> assetListEntrySegmentsEntryRels =
-			getAssetListEntrySegmentsEntryRels();
+			new ArrayList<>(getAssetListEntrySegmentsEntryRels());
 
 		Collections.sort(
-			new ArrayList<>(assetListEntrySegmentsEntryRels),
+			assetListEntrySegmentsEntryRels,
 			Comparator.comparingInt(
 				AssetListEntrySegmentsEntryRel::getPriority));
 

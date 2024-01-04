@@ -5587,14 +5587,6 @@ public class JournalArticleLocalServiceImpl
 				article.getLayoutUuid(), 0, 0, priority);
 		}
 
-		if ((journalArticleLocalService.fetchLatestArticle(
-				article.getResourcePrimKey(),
-				WorkflowConstants.STATUS_APPROVED) != null) &&
-			(assetEntry != null)) {
-
-			_assetEntryLocalService.updateVisible(assetEntry, true);
-		}
-
 		_assetLinkLocalService.updateLinks(
 			userId, assetEntry.getEntryId(), assetLinkEntryIds,
 			AssetLinkConstants.TYPE_RELATED);

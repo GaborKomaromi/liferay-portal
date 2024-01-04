@@ -5540,6 +5540,17 @@ public class JournalArticleLocalServiceImpl
 		throws PortalException {
 
 		boolean visible = article.isApproved();
+		Date expirationDate = article.getExpirationDate();
+
+		JournalArticle latestApprovedArticle =
+			journalArticleLocalService.fetchLatestArticle(
+				article.getResourcePrimKey(),
+				WorkflowConstants.STATUS_APPROVED);
+
+		if (latestApprovedArticle != null) {
+			visible = true;
+			expirationDate = latestApprovedArticle.getExpirationDate();
+		}
 
 		if (article.getClassNameId() !=
 				JournalArticleConstants.CLASS_NAME_ID_DEFAULT) {
@@ -5561,7 +5572,7 @@ public class JournalArticleLocalServiceImpl
 				article.getPrimaryKey(), article.getUuid(),
 				article.getDDMStructureId(), assetCategoryIds, assetTagNames,
 				isListable(article), false, null, null, null,
-				article.getExpirationDate(), ContentTypes.TEXT_HTML, title,
+				expirationDate, ContentTypes.TEXT_HTML, title,
 				description, description, null, article.getLayoutUuid(), 0, 0,
 				priority);
 		}
@@ -5582,7 +5593,7 @@ public class JournalArticleLocalServiceImpl
 				journalArticleResource.getResourcePrimKey(),
 				journalArticleResource.getUuid(), article.getDDMStructureId(),
 				assetCategoryIds, assetTagNames, isListable(article), visible,
-				null, null, publishDate, article.getExpirationDate(),
+				null, null, publishDate, expirationDate,
 				ContentTypes.TEXT_HTML, title, description, description, null,
 				article.getLayoutUuid(), 0, 0, priority);
 		}

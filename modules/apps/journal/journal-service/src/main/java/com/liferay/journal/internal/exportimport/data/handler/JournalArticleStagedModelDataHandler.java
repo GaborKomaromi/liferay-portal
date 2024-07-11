@@ -521,7 +521,7 @@ public class JournalArticleStagedModelDataHandler
 			articleElement.addAttribute("preloaded", "true");
 		}
 
-		if (FeatureFlagManagerUtil.isEnabled("LPS-165481")) {
+		if (FeatureFlagManagerUtil.isEnabled(article.getCompanyId(),"LPS-165481")) {
 			ManifestSummary manifestSummary =
 				portletDataContext.getManifestSummary();
 

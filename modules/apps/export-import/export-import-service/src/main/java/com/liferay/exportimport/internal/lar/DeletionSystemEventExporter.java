@@ -96,7 +96,7 @@ public class DeletionSystemEventExporter {
 				Object assetTitle = jsonObject.get("assetTitle");
 
 				if ((assetTitle == null) ||
-					!FeatureFlagManagerUtil.isEnabled("LPS-165481")) {
+					!FeatureFlagManagerUtil.isEnabled(systemEvent.getCompanyId(),"LPS-165481")) {
 
 					continue;
 				}

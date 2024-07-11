@@ -54,7 +54,7 @@ public class ProcessSummaryDisplayContext {
 
 		if (!Objects.equals(
 				portlet.getPortletId(), _PORTLET_ID_JOURNAL_PORTLET) ||
-			!FeatureFlagManagerUtil.isEnabled("LPS-165481")) {
+			!FeatureFlagManagerUtil.isEnabled(portlet.getCompanyId(),"LPS-165481")) {
 
 			return null;
 		}

@@ -73,9 +73,11 @@ public class JournalArticleTrashHandler extends BaseJournalTrashHandler {
 
 		JSONObject extraDataJSONObject = JSONUtil.put("inTrash", true);
 
-		if (FeatureFlagManagerUtil.isEnabled("LPS-165481")) {
-			JournalArticle article =
-				_journalArticleLocalService.getLatestArticle(classPK);
+		JournalArticle article =
+			_journalArticleLocalService.getLatestArticle(classPK);
+
+		if (FeatureFlagManagerUtil.isEnabled(article.getCompanyId(),"LPS-165481")) {
+;
 
 			extraDataJSONObject.put(
 				"assetTitle", article.getTitle(article.getDefaultLanguageId()));

@@ -203,7 +203,7 @@ public class JournalManagementToolbarDisplayContext
 				}
 			).build();
 
-		if (FeatureFlagManagerUtil.isEnabled("LPS-165481")) {
+		if (FeatureFlagManagerUtil.isEnabled(_themeDisplay.getCompanyId(),"LPS-165481")) {
 			actionDropdownItems = DropdownItemListBuilder.addAll(
 				actionDropdownItems
 			).addGroup(

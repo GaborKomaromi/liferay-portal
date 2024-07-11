@@ -1647,7 +1647,7 @@ public class ExportImportHelperImpl implements ExportImportHelper {
 				_manifestSummary.addModelAdditionCount(
 					manifestSummaryKey, modelAdditionCount);
 
-				if (FeatureFlagManagerUtil.isEnabled("LPS-165481")) {
+				if (FeatureFlagManagerUtil.isEnabled(_group.getCompanyId(),"LPS-165481")) {
 					String assetTitle = GetterUtil.getString(
 						element.attributeValue("asset-title"));
 

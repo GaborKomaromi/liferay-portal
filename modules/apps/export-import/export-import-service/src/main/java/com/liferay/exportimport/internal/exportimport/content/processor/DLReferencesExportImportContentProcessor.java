@@ -823,9 +823,11 @@ public class DLReferencesExportImportContentProcessor
 					"[$dl-reference=" + path + "$,$include-uuid=true$]";
 
 				if (content.startsWith("[#dl-reference=", endPos)) {
-					if (content.contains("include-friendly-url=true")) {
-						int friendlyURLPosition = content.indexOf(
-							"#,#include-friendly-url=true", beginPos);
+					int friendlyURLPosition = content.indexOf(
+						"#,#include-friendly-url=true", beginPos);
+
+					if (content.contains("include-friendly-url=true") &&
+						(friendlyURLPosition != -1)) {
 
 						endPos = friendlyURLPosition + 2;
 					}

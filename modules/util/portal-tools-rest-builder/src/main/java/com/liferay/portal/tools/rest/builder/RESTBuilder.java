@@ -1988,6 +1988,14 @@ public class RESTBuilder {
 		int index = absolutePathString.indexOf("/liferay-portal/");
 
 		if (index == -1) {
+			String os = System.getProperty(
+				"os.name"
+			).toLowerCase();
+
+			if (os.contains("win")) {
+				return "npm.cmd";
+			}
+
 			return "npm";
 		}
 

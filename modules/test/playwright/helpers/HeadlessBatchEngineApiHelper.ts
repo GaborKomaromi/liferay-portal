@@ -5,6 +5,7 @@
 
 import * as fs from 'fs';
 
+import {HeadlessBatchEngineClient} from "../../../apps/headless/headless-batch-engine/headless-batch-engine-client-js/src/main/resources/META-INF/resources/node"
 import getRandomString from '../utils/getRandomString';
 import {ApiHelpers, DataApiHelpers} from './ApiHelpers';
 
@@ -30,20 +31,22 @@ export class HeadlessBatchEngineApiHelper {
 	}
 
 	async getExportTask(exportTaskId: number): Promise<TExportTask> {
-		return this.apiHelpers.get(
-			`${this.apiHelpers.baseUrl}${this.basePath}/export-task/${exportTaskId}`
+
+		const headlessBatchEngineClient = await this.apiHelpers.buildRestClient(
+			HeadlessBatchEngineClient
 		);
+
+		return headlessBatchEngineClient.exportTask.getExportTask({exportTaskId: exportTaskId})
+
 	}
 
 	async getExportTaskContent(exportTaskId: number) {
-		const body: Buffer = await (
-			await this.apiHelpers.getResponse(
-				`${this.apiHelpers.baseUrl}${this.basePath}/export-task/${exportTaskId}/content`
-			)
-		).body();
-		const fileName = '/tmp/' + getRandomString();
-		fs.writeFileSync(fileName, body);
+		
+		
+		const headlessBatchEngineClient = await this.apiHelpers.buildRestClient(
+			HeadlessBatchEngineClient
+		);
 
-		return fileName;
+		return headlessBatchEngineClient.exportTask.getExportTaskContent({exportTaskId: exportTaskId})
 	}
 }

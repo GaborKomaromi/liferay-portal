@@ -9,4 +9,5 @@ clientDir: "../headless-batch-engine-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true
 generateBatch: false
+generateClientJS: true
 generateGraphQL: false

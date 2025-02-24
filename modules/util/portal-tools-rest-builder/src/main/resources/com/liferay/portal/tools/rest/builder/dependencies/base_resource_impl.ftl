@@ -149,6 +149,10 @@ public abstract class Base${schemaName}ResourceImpl
 
 		<#if stringUtil.equals(javaMethodSignature.methodName, "delete" + schemaName)>
 			<#assign deleteBatchJavaMethodSignature = javaMethodSignature />
+        <#elseif stringUtil.equals(javaMethodSignature.methodName, "deleteByExternalReferenceCode")>
+            <#assign deleteByExternalReferenceCodeJavaMethodSignature = javaMethodSignature />
+		<#elseif stringUtil.equals(javaMethodSignature.methodName, "delete" + schemaName +"ByExternalReferenceCode")>
+            <#assign deleteEntryByExternalReferenceCodeJavaMethodSignature = javaMethodSignature />
 		<#elseif stringUtil.equals(javaMethodSignature.methodName, "get" + schemaName)>
 			<#assign getByIdJavaMethodSignature = javaMethodSignature />
 		<#elseif stringUtil.equals(javaMethodSignature.methodName, "get" + schemaName + "ByExternalReferenceCode") || stringUtil.equals(javaMethodSignature.methodName, "get" + parentSchemaName + schemaName + "ByExternalReferenceCode")>
@@ -994,11 +998,35 @@ public abstract class Base${schemaName}ResourceImpl
 		public void delete(Collection<${javaDataType}> ${schemaVarNames}, Map<String, Serializable> parameters) throws Exception {
 			<#if deleteBatchJavaMethodSignature?? && properties?keys?seq_contains("id")>
 				for (${javaDataType} ${schemaVarName} : ${schemaVarNames}) {
-					delete${schemaName}(${schemaVarName}.getId());
+					if (${schemaVarName}.getId() != null) {
+						delete${schemaName}(${schemaVarName}.getId());
+					}
+                	<#if deleteByExternalReferenceCodeJavaMethodSignature??>
+						else{
+							deleteByExternalReferenceCode(${schemaVarName}.getExternalReferenceCode());
+						}
+                    <#elseif deleteEntryByExternalReferenceCodeJavaMethodSignature??>
+						else {
+						delete${schemaName}ByExternalReferenceCode(${schemaVarName}.getExternalReferenceCode());
+						}
+                    <#else>
+                    </#if>
 				}
 			<#elseif deleteBatchJavaMethodSignature?? && properties?keys?seq_contains(schemaVarName + "Id")>
 				for (${javaDataType} ${schemaVarName} : ${schemaVarNames}) {
-					delete${schemaName}(${schemaVarName}.get${schemaName}Id());
+					if(${schemaVarName}.get${schemaName}Id()) {
+						delete${schemaName}(${schemaVarName}.get${schemaName}Id());
+					}
+                	<#if deleteByExternalReferenceCodeJavaMethodSignature??>
+						else {
+							deleteByExternalReferenceCode(${schemaVarName}.getExternalReferenceCode());
+						}
+					<#elseif deleteEntryByExternalReferenceCodeJavaMethodSignature??>
+						else {
+						delete${schemaName}ByExternalReferenceCode(${schemaVarName}.getExternalReferenceCode());
+						}
+                    <#else>
+                	</#if>
 				}
 			<#else>
 				throw new UnsupportedOperationException("This method needs to be implemented");

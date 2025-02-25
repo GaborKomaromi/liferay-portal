@@ -334,8 +334,10 @@ public abstract class BaseSkuVirtualSettingsFileEntryResourceImpl
 		for (SkuVirtualSettingsFileEntry skuVirtualSettingsFileEntry :
 				skuVirtualSettingsFileEntries) {
 
-			deleteSkuVirtualSettingsFileEntry(
-				skuVirtualSettingsFileEntry.getId());
+			if (skuVirtualSettingsFileEntry.getId() != null) {
+				deleteSkuVirtualSettingsFileEntry(
+					skuVirtualSettingsFileEntry.getId());
+			}
 		}
 	}
 

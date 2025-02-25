@@ -1391,7 +1391,9 @@ public abstract class BaseTaxonomyCategoryResourceImpl
 		throws Exception {
 
 		for (TaxonomyCategory taxonomyCategory : taxonomyCategories) {
-			deleteTaxonomyCategory(taxonomyCategory.getId());
+			if (taxonomyCategory.getId() != null) {
+				deleteTaxonomyCategory(taxonomyCategory.getId());
+			}
 		}
 	}
 

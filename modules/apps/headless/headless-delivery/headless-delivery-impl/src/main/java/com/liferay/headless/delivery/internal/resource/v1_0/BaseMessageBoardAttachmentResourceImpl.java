@@ -857,7 +857,9 @@ public abstract class BaseMessageBoardAttachmentResourceImpl
 		for (MessageBoardAttachment messageBoardAttachment :
 				messageBoardAttachments) {
 
-			deleteMessageBoardAttachment(messageBoardAttachment.getId());
+			if (messageBoardAttachment.getId() != null) {
+				deleteMessageBoardAttachment(messageBoardAttachment.getId());
+			}
 		}
 	}
 

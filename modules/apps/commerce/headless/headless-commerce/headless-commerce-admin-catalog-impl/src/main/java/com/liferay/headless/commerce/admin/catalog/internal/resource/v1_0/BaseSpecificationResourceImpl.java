@@ -673,7 +673,13 @@ public abstract class BaseSpecificationResourceImpl
 		throws Exception {
 
 		for (Specification specification : specifications) {
-			deleteSpecification(specification.getId());
+			if (specification.getId() != null) {
+				deleteSpecification(specification.getId());
+			}
+			else {
+				deleteSpecificationByExternalReferenceCode(
+					specification.getExternalReferenceCode());
+			}
 		}
 	}
 

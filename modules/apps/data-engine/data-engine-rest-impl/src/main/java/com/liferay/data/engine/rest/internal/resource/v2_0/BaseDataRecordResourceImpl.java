@@ -869,7 +869,9 @@ public abstract class BaseDataRecordResourceImpl
 		throws Exception {
 
 		for (DataRecord dataRecord : dataRecords) {
-			deleteDataRecord(dataRecord.getId());
+			if (dataRecord.getId() != null) {
+				deleteDataRecord(dataRecord.getId());
+			}
 		}
 	}
 

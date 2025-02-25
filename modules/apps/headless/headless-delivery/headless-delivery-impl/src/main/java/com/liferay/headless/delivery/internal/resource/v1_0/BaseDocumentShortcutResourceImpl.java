@@ -1015,7 +1015,9 @@ public abstract class BaseDocumentShortcutResourceImpl
 		throws Exception {
 
 		for (DocumentShortcut documentShortcut : documentShortcuts) {
-			deleteDocumentShortcut(documentShortcut.getId());
+			if (documentShortcut.getId() != null) {
+				deleteDocumentShortcut(documentShortcut.getId());
+			}
 		}
 	}
 

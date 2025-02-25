@@ -518,7 +518,9 @@ public abstract class BaseSLAResourceImpl
 		throws Exception {
 
 		for (SLA sla : slas) {
-			deleteSLA(sla.getId());
+			if (sla.getId() != null) {
+				deleteSLA(sla.getId());
+			}
 		}
 	}
 

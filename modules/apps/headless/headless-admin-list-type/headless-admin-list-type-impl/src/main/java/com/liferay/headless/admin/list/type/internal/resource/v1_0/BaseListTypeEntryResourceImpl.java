@@ -674,7 +674,9 @@ public abstract class BaseListTypeEntryResourceImpl
 		throws Exception {
 
 		for (ListTypeEntry listTypeEntry : listTypeEntries) {
-			deleteListTypeEntry(listTypeEntry.getId());
+			if (listTypeEntry.getId() != null) {
+				deleteListTypeEntry(listTypeEntry.getId());
+			}
 		}
 	}
 

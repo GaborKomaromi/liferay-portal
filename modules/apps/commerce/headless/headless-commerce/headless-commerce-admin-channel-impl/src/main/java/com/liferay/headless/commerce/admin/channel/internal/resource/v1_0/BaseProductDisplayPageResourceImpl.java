@@ -453,7 +453,9 @@ public abstract class BaseProductDisplayPageResourceImpl
 		throws Exception {
 
 		for (ProductDisplayPage productDisplayPage : productDisplayPages) {
-			deleteProductDisplayPage(productDisplayPage.getId());
+			if (productDisplayPage.getId() != null) {
+				deleteProductDisplayPage(productDisplayPage.getId());
+			}
 		}
 	}
 

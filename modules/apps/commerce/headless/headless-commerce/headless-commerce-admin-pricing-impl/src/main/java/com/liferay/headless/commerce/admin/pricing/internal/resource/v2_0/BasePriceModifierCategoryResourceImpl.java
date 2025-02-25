@@ -440,8 +440,10 @@ public abstract class BasePriceModifierCategoryResourceImpl
 		for (PriceModifierCategory priceModifierCategory :
 				priceModifierCategories) {
 
-			deletePriceModifierCategory(
-				priceModifierCategory.getPriceModifierCategoryId());
+			if (priceModifierCategory.getPriceModifierCategoryId()) {
+				deletePriceModifierCategory(
+					priceModifierCategory.getPriceModifierCategoryId());
+			}
 		}
 	}
 

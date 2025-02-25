@@ -378,7 +378,9 @@ public abstract class BaseAvailabilityEstimateResourceImpl
 		for (AvailabilityEstimate availabilityEstimate :
 				availabilityEstimates) {
 
-			deleteAvailabilityEstimate(availabilityEstimate.getId());
+			if (availabilityEstimate.getId() != null) {
+				deleteAvailabilityEstimate(availabilityEstimate.getId());
+			}
 		}
 	}
 

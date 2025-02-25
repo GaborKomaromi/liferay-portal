@@ -825,7 +825,13 @@ public abstract class BaseProductResourceImpl
 		throws Exception {
 
 		for (Product product : products) {
-			deleteProduct(product.getId());
+			if (product.getId() != null) {
+				deleteProduct(product.getId());
+			}
+			else {
+				deleteProductByExternalReferenceCode(
+					product.getExternalReferenceCode());
+			}
 		}
 	}
 

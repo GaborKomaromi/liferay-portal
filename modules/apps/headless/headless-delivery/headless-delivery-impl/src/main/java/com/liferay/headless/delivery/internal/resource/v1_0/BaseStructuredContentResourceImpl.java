@@ -2754,7 +2754,9 @@ public abstract class BaseStructuredContentResourceImpl
 		throws Exception {
 
 		for (StructuredContent structuredContent : structuredContents) {
-			deleteStructuredContent(structuredContent.getId());
+			if (structuredContent.getId() != null) {
+				deleteStructuredContent(structuredContent.getId());
+			}
 		}
 	}
 

@@ -349,7 +349,9 @@ public abstract class BaseWarehouseResourceImpl
 		throws Exception {
 
 		for (Warehouse warehouse : warehouses) {
-			deleteWarehouse(warehouse.getId());
+			if (warehouse.getId() != null) {
+				deleteWarehouse(warehouse.getId());
+			}
 		}
 	}
 

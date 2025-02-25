@@ -628,7 +628,9 @@ public abstract class BaseKnowledgeBaseAttachmentResourceImpl
 		for (KnowledgeBaseAttachment knowledgeBaseAttachment :
 				knowledgeBaseAttachments) {
 
-			deleteKnowledgeBaseAttachment(knowledgeBaseAttachment.getId());
+			if (knowledgeBaseAttachment.getId() != null) {
+				deleteKnowledgeBaseAttachment(knowledgeBaseAttachment.getId());
+			}
 		}
 	}
 

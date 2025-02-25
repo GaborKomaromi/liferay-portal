@@ -399,8 +399,10 @@ public abstract class BasePriceListOrderTypeResourceImpl
 		throws Exception {
 
 		for (PriceListOrderType priceListOrderType : priceListOrderTypes) {
-			deletePriceListOrderType(
-				priceListOrderType.getPriceListOrderTypeId());
+			if (priceListOrderType.getPriceListOrderTypeId()) {
+				deletePriceListOrderType(
+					priceListOrderType.getPriceListOrderTypeId());
+			}
 		}
 	}
 

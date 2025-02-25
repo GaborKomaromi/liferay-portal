@@ -377,7 +377,9 @@ public abstract class BaseCTProcessResourceImpl
 		throws Exception {
 
 		for (CTProcess ctProcess : ctProcesses) {
-			deleteCTProcess(ctProcess.getId());
+			if (ctProcess.getId() != null) {
+				deleteCTProcess(ctProcess.getId());
+			}
 		}
 	}
 

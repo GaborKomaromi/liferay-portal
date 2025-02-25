@@ -447,8 +447,10 @@ public abstract class BasePriceModifierProductGroupResourceImpl
 		for (PriceModifierProductGroup priceModifierProductGroup :
 				priceModifierProductGroups) {
 
-			deletePriceModifierProductGroup(
-				priceModifierProductGroup.getPriceModifierProductGroupId());
+			if (priceModifierProductGroup.getPriceModifierProductGroupId()) {
+				deletePriceModifierProductGroup(
+					priceModifierProductGroup.getPriceModifierProductGroupId());
+			}
 		}
 	}
 

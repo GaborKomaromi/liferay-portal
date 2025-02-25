@@ -288,7 +288,9 @@ public abstract class BaseProductAccountGroupResourceImpl
 		throws Exception {
 
 		for (ProductAccountGroup productAccountGroup : productAccountGroups) {
-			deleteProductAccountGroup(productAccountGroup.getId());
+			if (productAccountGroup.getId() != null) {
+				deleteProductAccountGroup(productAccountGroup.getId());
+			}
 		}
 	}
 

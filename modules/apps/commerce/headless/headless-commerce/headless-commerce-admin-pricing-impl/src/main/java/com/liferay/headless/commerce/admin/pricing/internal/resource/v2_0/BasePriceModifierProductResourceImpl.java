@@ -438,8 +438,10 @@ public abstract class BasePriceModifierProductResourceImpl
 		for (PriceModifierProduct priceModifierProduct :
 				priceModifierProducts) {
 
-			deletePriceModifierProduct(
-				priceModifierProduct.getPriceModifierProductId());
+			if (priceModifierProduct.getPriceModifierProductId()) {
+				deletePriceModifierProduct(
+					priceModifierProduct.getPriceModifierProductId());
+			}
 		}
 	}
 

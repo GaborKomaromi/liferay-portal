@@ -335,8 +335,10 @@ public abstract class BaseProductVirtualSettingsFileEntryResourceImpl
 		for (ProductVirtualSettingsFileEntry productVirtualSettingsFileEntry :
 				productVirtualSettingsFileEntries) {
 
-			deleteProductVirtualSettingsFileEntry(
-				productVirtualSettingsFileEntry.getId());
+			if (productVirtualSettingsFileEntry.getId() != null) {
+				deleteProductVirtualSettingsFileEntry(
+					productVirtualSettingsFileEntry.getId());
+			}
 		}
 	}
 

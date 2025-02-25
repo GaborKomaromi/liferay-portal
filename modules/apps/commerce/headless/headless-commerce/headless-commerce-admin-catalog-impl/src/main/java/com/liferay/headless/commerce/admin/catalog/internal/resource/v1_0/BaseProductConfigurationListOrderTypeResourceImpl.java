@@ -463,9 +463,13 @@ public abstract class BaseProductConfigurationListOrderTypeResourceImpl
 				productConfigurationListOrderType :
 					productConfigurationListOrderTypes) {
 
-			deleteProductConfigurationListOrderType(
-				productConfigurationListOrderType.
-					getProductConfigurationListOrderTypeId());
+			if (productConfigurationListOrderType.
+					getProductConfigurationListOrderTypeId()) {
+
+				deleteProductConfigurationListOrderType(
+					productConfigurationListOrderType.
+						getProductConfigurationListOrderTypeId());
+			}
 		}
 	}
 

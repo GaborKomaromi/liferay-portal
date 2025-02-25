@@ -395,7 +395,9 @@ public abstract class BaseWorkflowInstanceResourceImpl
 		throws Exception {
 
 		for (WorkflowInstance workflowInstance : workflowInstances) {
-			deleteWorkflowInstance(workflowInstance.getId());
+			if (workflowInstance.getId() != null) {
+				deleteWorkflowInstance(workflowInstance.getId());
+			}
 		}
 	}
 

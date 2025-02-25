@@ -812,8 +812,10 @@ public abstract class BaseDocumentDataDefinitionTypeResourceImpl
 		for (DocumentDataDefinitionType documentDataDefinitionType :
 				documentDataDefinitionTypes) {
 
-			deleteDocumentDataDefinitionType(
-				documentDataDefinitionType.getId());
+			if (documentDataDefinitionType.getId() != null) {
+				deleteDocumentDataDefinitionType(
+					documentDataDefinitionType.getId());
+			}
 		}
 	}
 

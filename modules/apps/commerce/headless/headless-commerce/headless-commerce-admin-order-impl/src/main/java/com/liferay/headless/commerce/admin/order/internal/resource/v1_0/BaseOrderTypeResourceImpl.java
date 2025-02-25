@@ -705,7 +705,13 @@ public abstract class BaseOrderTypeResourceImpl
 		throws Exception {
 
 		for (OrderType orderType : orderTypes) {
-			deleteOrderType(orderType.getId());
+			if (orderType.getId() != null) {
+				deleteOrderType(orderType.getId());
+			}
+			else {
+				deleteOrderTypeByExternalReferenceCode(
+					orderType.getExternalReferenceCode());
+			}
 		}
 	}
 

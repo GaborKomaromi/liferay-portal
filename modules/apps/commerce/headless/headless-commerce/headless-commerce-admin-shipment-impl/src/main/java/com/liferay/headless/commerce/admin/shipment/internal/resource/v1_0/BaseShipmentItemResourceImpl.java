@@ -500,7 +500,13 @@ public abstract class BaseShipmentItemResourceImpl
 		throws Exception {
 
 		for (ShipmentItem shipmentItem : shipmentItems) {
-			deleteShipmentItem(shipmentItem.getId());
+			if (shipmentItem.getId() != null) {
+				deleteShipmentItem(shipmentItem.getId());
+			}
+			else {
+				deleteShipmentItemByExternalReferenceCode(
+					shipmentItem.getExternalReferenceCode());
+			}
 		}
 	}
 

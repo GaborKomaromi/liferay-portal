@@ -1362,7 +1362,13 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 
 		for (ObjectEntry objectEntry : objectEntries) {
-			deleteObjectEntry(objectEntry.getId());
+			if (objectEntry.getId() != null) {
+				deleteObjectEntry(objectEntry.getId());
+			}
+			else {
+				deleteByExternalReferenceCode(
+					objectEntry.getExternalReferenceCode());
+			}
 		}
 	}
 

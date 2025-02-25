@@ -188,7 +188,9 @@ public abstract class BaseExperimentResourceImpl
 		throws Exception {
 
 		for (Experiment experiment : experiments) {
-			deleteExperiment(experiment.getId());
+			if (experiment.getId() != null) {
+				deleteExperiment(experiment.getId());
+			}
 		}
 	}
 

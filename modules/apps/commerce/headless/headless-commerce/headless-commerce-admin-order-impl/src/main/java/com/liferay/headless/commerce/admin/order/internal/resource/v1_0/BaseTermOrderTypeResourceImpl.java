@@ -406,7 +406,9 @@ public abstract class BaseTermOrderTypeResourceImpl
 		throws Exception {
 
 		for (TermOrderType termOrderType : termOrderTypes) {
-			deleteTermOrderType(termOrderType.getTermOrderTypeId());
+			if (termOrderType.getTermOrderTypeId()) {
+				deleteTermOrderType(termOrderType.getTermOrderTypeId());
+			}
 		}
 	}
 

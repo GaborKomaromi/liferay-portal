@@ -418,7 +418,10 @@ public abstract class BaseWarehouseChannelResourceImpl
 		throws Exception {
 
 		for (WarehouseChannel warehouseChannel : warehouseChannels) {
-			deleteWarehouseChannel(warehouseChannel.getWarehouseChannelId());
+			if (warehouseChannel.getWarehouseChannelId()) {
+				deleteWarehouseChannel(
+					warehouseChannel.getWarehouseChannelId());
+			}
 		}
 	}
 

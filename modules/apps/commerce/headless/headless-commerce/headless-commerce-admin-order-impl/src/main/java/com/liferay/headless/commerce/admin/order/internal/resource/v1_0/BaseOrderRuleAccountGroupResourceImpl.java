@@ -426,8 +426,10 @@ public abstract class BaseOrderRuleAccountGroupResourceImpl
 		for (OrderRuleAccountGroup orderRuleAccountGroup :
 				orderRuleAccountGroups) {
 
-			deleteOrderRuleAccountGroup(
-				orderRuleAccountGroup.getOrderRuleAccountGroupId());
+			if (orderRuleAccountGroup.getOrderRuleAccountGroupId()) {
+				deleteOrderRuleAccountGroup(
+					orderRuleAccountGroup.getOrderRuleAccountGroupId());
+			}
 		}
 	}
 

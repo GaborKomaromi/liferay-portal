@@ -278,7 +278,9 @@ public abstract class BaseProductChannelResourceImpl
 		throws Exception {
 
 		for (ProductChannel productChannel : productChannels) {
-			deleteProductChannel(productChannel.getId());
+			if (productChannel.getId() != null) {
+				deleteProductChannel(productChannel.getId());
+			}
 		}
 	}
 

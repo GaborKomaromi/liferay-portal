@@ -342,7 +342,9 @@ public abstract class BaseTaxCategoryResourceImpl
 		throws Exception {
 
 		for (TaxCategory taxCategory : taxCategories) {
-			deleteTaxCategory(taxCategory.getId());
+			if (taxCategory.getId() != null) {
+				deleteTaxCategory(taxCategory.getId());
+			}
 		}
 	}
 

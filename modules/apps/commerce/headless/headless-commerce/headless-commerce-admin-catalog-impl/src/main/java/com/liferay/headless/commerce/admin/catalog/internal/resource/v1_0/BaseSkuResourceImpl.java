@@ -878,7 +878,13 @@ public abstract class BaseSkuResourceImpl
 		throws Exception {
 
 		for (Sku sku : skus) {
-			deleteSku(sku.getId());
+			if (sku.getId() != null) {
+				deleteSku(sku.getId());
+			}
+			else {
+				deleteSkuByExternalReferenceCode(
+					sku.getExternalReferenceCode());
+			}
 		}
 	}
 

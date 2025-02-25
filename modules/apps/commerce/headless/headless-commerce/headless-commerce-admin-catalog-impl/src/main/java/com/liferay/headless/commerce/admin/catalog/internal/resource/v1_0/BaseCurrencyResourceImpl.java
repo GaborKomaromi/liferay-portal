@@ -530,7 +530,13 @@ public abstract class BaseCurrencyResourceImpl
 		throws Exception {
 
 		for (Currency currency : currencies) {
-			deleteCurrency(currency.getId());
+			if (currency.getId() != null) {
+				deleteCurrency(currency.getId());
+			}
+			else {
+				deleteCurrencyByExternalReferenceCode(
+					currency.getExternalReferenceCode());
+			}
 		}
 	}
 

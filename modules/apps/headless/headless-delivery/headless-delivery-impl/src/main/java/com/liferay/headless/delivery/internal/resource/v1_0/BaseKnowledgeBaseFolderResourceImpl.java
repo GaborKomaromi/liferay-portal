@@ -1302,7 +1302,9 @@ public abstract class BaseKnowledgeBaseFolderResourceImpl
 		throws Exception {
 
 		for (KnowledgeBaseFolder knowledgeBaseFolder : knowledgeBaseFolders) {
-			deleteKnowledgeBaseFolder(knowledgeBaseFolder.getId());
+			if (knowledgeBaseFolder.getId() != null) {
+				deleteKnowledgeBaseFolder(knowledgeBaseFolder.getId());
+			}
 		}
 	}
 

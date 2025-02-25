@@ -471,7 +471,9 @@ public abstract class BaseCategoryDisplayPageResourceImpl
 		throws Exception {
 
 		for (CategoryDisplayPage categoryDisplayPage : categoryDisplayPages) {
-			deleteCategoryDisplayPage(categoryDisplayPage.getId());
+			if (categoryDisplayPage.getId() != null) {
+				deleteCategoryDisplayPage(categoryDisplayPage.getId());
+			}
 		}
 	}
 

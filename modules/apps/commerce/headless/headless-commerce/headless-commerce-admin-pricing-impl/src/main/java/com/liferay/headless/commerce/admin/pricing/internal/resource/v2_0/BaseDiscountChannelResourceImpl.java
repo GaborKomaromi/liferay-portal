@@ -416,7 +416,9 @@ public abstract class BaseDiscountChannelResourceImpl
 		throws Exception {
 
 		for (DiscountChannel discountChannel : discountChannels) {
-			deleteDiscountChannel(discountChannel.getDiscountChannelId());
+			if (discountChannel.getDiscountChannelId()) {
+				deleteDiscountChannel(discountChannel.getDiscountChannelId());
+			}
 		}
 	}
 

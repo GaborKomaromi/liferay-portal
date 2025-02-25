@@ -758,7 +758,9 @@ public abstract class BaseObjectFieldResourceImpl
 		throws Exception {
 
 		for (ObjectField objectField : objectFields) {
-			deleteObjectField(objectField.getId());
+			if (objectField.getId() != null) {
+				deleteObjectField(objectField.getId());
+			}
 		}
 	}
 

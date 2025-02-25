@@ -272,8 +272,10 @@ public abstract class BasePaymentMethodGroupRelTermResourceImpl
 		for (PaymentMethodGroupRelTerm paymentMethodGroupRelTerm :
 				paymentMethodGroupRelTerms) {
 
-			deletePaymentMethodGroupRelTerm(
-				paymentMethodGroupRelTerm.getPaymentMethodGroupRelTermId());
+			if (paymentMethodGroupRelTerm.getPaymentMethodGroupRelTermId()) {
+				deletePaymentMethodGroupRelTerm(
+					paymentMethodGroupRelTerm.getPaymentMethodGroupRelTermId());
+			}
 		}
 	}
 

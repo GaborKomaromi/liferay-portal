@@ -860,7 +860,9 @@ public abstract class BaseDataRecordCollectionResourceImpl
 		for (DataRecordCollection dataRecordCollection :
 				dataRecordCollections) {
 
-			deleteDataRecordCollection(dataRecordCollection.getId());
+			if (dataRecordCollection.getId() != null) {
+				deleteDataRecordCollection(dataRecordCollection.getId());
+			}
 		}
 	}
 

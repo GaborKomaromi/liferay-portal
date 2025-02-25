@@ -1513,7 +1513,9 @@ public abstract class BaseKeywordResourceImpl
 		throws Exception {
 
 		for (Keyword keyword : keywords) {
-			deleteKeyword(keyword.getId());
+			if (keyword.getId() != null) {
+				deleteKeyword(keyword.getId());
+			}
 		}
 	}
 

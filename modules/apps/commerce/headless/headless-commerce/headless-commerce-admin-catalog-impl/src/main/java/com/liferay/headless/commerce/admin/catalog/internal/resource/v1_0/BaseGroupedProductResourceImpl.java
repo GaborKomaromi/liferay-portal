@@ -433,7 +433,9 @@ public abstract class BaseGroupedProductResourceImpl
 		throws Exception {
 
 		for (GroupedProduct groupedProduct : groupedProducts) {
-			deleteGroupedProduct(groupedProduct.getId());
+			if (groupedProduct.getId() != null) {
+				deleteGroupedProduct(groupedProduct.getId());
+			}
 		}
 	}
 

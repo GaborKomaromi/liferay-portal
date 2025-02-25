@@ -597,7 +597,13 @@ public abstract class BaseProductSpecificationResourceImpl
 		for (ProductSpecification productSpecification :
 				productSpecifications) {
 
-			deleteProductSpecification(productSpecification.getId());
+			if (productSpecification.getId() != null) {
+				deleteProductSpecification(productSpecification.getId());
+			}
+			else {
+				deleteProductSpecificationByExternalReferenceCode(
+					productSpecification.getExternalReferenceCode());
+			}
 		}
 	}
 

@@ -1123,7 +1123,13 @@ public abstract class BaseCartResourceImpl
 		throws Exception {
 
 		for (Cart cart : carts) {
-			deleteCart(cart.getId());
+			if (cart.getId() != null) {
+				deleteCart(cart.getId());
+			}
+			else {
+				deleteCartByExternalReferenceCode(
+					cart.getExternalReferenceCode());
+			}
 		}
 	}
 

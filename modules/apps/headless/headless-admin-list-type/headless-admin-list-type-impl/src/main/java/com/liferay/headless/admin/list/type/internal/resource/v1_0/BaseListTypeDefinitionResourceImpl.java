@@ -684,7 +684,9 @@ public abstract class BaseListTypeDefinitionResourceImpl
 		throws Exception {
 
 		for (ListTypeDefinition listTypeDefinition : listTypeDefinitions) {
-			deleteListTypeDefinition(listTypeDefinition.getId());
+			if (listTypeDefinition.getId() != null) {
+				deleteListTypeDefinition(listTypeDefinition.getId());
+			}
 		}
 	}
 

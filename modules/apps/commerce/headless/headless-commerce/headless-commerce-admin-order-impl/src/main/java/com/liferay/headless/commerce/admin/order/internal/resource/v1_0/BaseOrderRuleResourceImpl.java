@@ -655,7 +655,13 @@ public abstract class BaseOrderRuleResourceImpl
 		throws Exception {
 
 		for (OrderRule orderRule : orderRules) {
-			deleteOrderRule(orderRule.getId());
+			if (orderRule.getId() != null) {
+				deleteOrderRule(orderRule.getId());
+			}
+			else {
+				deleteOrderRuleByExternalReferenceCode(
+					orderRule.getExternalReferenceCode());
+			}
 		}
 	}
 

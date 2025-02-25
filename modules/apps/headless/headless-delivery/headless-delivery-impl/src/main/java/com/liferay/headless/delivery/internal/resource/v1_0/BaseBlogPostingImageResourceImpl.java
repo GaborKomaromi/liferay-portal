@@ -614,7 +614,9 @@ public abstract class BaseBlogPostingImageResourceImpl
 		throws Exception {
 
 		for (BlogPostingImage blogPostingImage : blogPostingImages) {
-			deleteBlogPostingImage(blogPostingImage.getId());
+			if (blogPostingImage.getId() != null) {
+				deleteBlogPostingImage(blogPostingImage.getId());
+			}
 		}
 	}
 

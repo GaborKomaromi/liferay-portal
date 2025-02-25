@@ -464,7 +464,9 @@ public abstract class BaseSkuUnitOfMeasureResourceImpl
 		throws Exception {
 
 		for (SkuUnitOfMeasure skuUnitOfMeasure : skuUnitOfMeasures) {
-			deleteSkuUnitOfMeasure(skuUnitOfMeasure.getId());
+			if (skuUnitOfMeasure.getId() != null) {
+				deleteSkuUnitOfMeasure(skuUnitOfMeasure.getId());
+			}
 		}
 	}
 

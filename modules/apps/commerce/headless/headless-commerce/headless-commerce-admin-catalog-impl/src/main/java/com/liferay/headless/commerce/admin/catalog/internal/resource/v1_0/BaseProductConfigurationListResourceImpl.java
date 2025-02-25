@@ -605,7 +605,14 @@ public abstract class BaseProductConfigurationListResourceImpl
 		for (ProductConfigurationList productConfigurationList :
 				productConfigurationLists) {
 
-			deleteProductConfigurationList(productConfigurationList.getId());
+			if (productConfigurationList.getId() != null) {
+				deleteProductConfigurationList(
+					productConfigurationList.getId());
+			}
+			else {
+				deleteProductConfigurationListByExternalReferenceCode(
+					productConfigurationList.getExternalReferenceCode());
+			}
 		}
 	}
 

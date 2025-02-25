@@ -464,9 +464,13 @@ public abstract class BaseProductConfigurationListAccountGroupResourceImpl
 				productConfigurationListAccountGroup :
 					productConfigurationListAccountGroups) {
 
-			deleteProductConfigurationListAccountGroup(
-				productConfigurationListAccountGroup.
-					getProductConfigurationListAccountGroupId());
+			if (productConfigurationListAccountGroup.
+					getProductConfigurationListAccountGroupId()) {
+
+				deleteProductConfigurationListAccountGroup(
+					productConfigurationListAccountGroup.
+						getProductConfigurationListAccountGroupId());
+			}
 		}
 	}
 

@@ -710,7 +710,9 @@ public abstract class BaseObjectRelationshipResourceImpl
 		throws Exception {
 
 		for (ObjectRelationship objectRelationship : objectRelationships) {
-			deleteObjectRelationship(objectRelationship.getId());
+			if (objectRelationship.getId() != null) {
+				deleteObjectRelationship(objectRelationship.getId());
+			}
 		}
 	}
 

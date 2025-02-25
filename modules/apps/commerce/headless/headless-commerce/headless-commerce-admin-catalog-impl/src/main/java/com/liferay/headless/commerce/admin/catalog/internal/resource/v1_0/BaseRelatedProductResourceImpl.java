@@ -449,7 +449,9 @@ public abstract class BaseRelatedProductResourceImpl
 		throws Exception {
 
 		for (RelatedProduct relatedProduct : relatedProducts) {
-			deleteRelatedProduct(relatedProduct.getId());
+			if (relatedProduct.getId() != null) {
+				deleteRelatedProduct(relatedProduct.getId());
+			}
 		}
 	}
 

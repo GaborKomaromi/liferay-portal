@@ -2026,7 +2026,9 @@ public abstract class BaseMessageBoardMessageResourceImpl
 		throws Exception {
 
 		for (MessageBoardMessage messageBoardMessage : messageBoardMessages) {
-			deleteMessageBoardMessage(messageBoardMessage.getId());
+			if (messageBoardMessage.getId() != null) {
+				deleteMessageBoardMessage(messageBoardMessage.getId());
+			}
 		}
 	}
 

@@ -402,7 +402,9 @@ public abstract class BaseDiscountSkuResourceImpl
 		throws Exception {
 
 		for (DiscountSku discountSku : discountSkus) {
-			deleteDiscountSku(discountSku.getDiscountSkuId());
+			if (discountSku.getDiscountSkuId()) {
+				deleteDiscountSku(discountSku.getDiscountSkuId());
+			}
 		}
 	}
 

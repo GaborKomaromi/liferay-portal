@@ -2568,7 +2568,13 @@ public abstract class BaseUserAccountResourceImpl
 		throws Exception {
 
 		for (UserAccount userAccount : userAccounts) {
-			deleteUserAccount(userAccount.getId());
+			if (userAccount.getId() != null) {
+				deleteUserAccount(userAccount.getId());
+			}
+			else {
+				deleteUserAccountByExternalReferenceCode(
+					userAccount.getExternalReferenceCode());
+			}
 		}
 	}
 

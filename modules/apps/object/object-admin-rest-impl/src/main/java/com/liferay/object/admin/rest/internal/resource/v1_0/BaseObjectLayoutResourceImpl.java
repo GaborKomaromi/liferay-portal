@@ -619,7 +619,9 @@ public abstract class BaseObjectLayoutResourceImpl
 		throws Exception {
 
 		for (ObjectLayout objectLayout : objectLayouts) {
-			deleteObjectLayout(objectLayout.getId());
+			if (objectLayout.getId() != null) {
+				deleteObjectLayout(objectLayout.getId());
+			}
 		}
 	}
 

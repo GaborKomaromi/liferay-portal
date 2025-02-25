@@ -409,7 +409,10 @@ public abstract class BaseOrderRuleAccountResourceImpl
 		throws Exception {
 
 		for (OrderRuleAccount orderRuleAccount : orderRuleAccounts) {
-			deleteOrderRuleAccount(orderRuleAccount.getOrderRuleAccountId());
+			if (orderRuleAccount.getOrderRuleAccountId()) {
+				deleteOrderRuleAccount(
+					orderRuleAccount.getOrderRuleAccountId());
+			}
 		}
 	}
 

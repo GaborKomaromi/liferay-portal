@@ -370,7 +370,9 @@ public abstract class BaseChannelAccountResourceImpl
 		throws Exception {
 
 		for (ChannelAccount channelAccount : channelAccounts) {
-			deleteChannelAccount(channelAccount.getChannelAccountId());
+			if (channelAccount.getChannelAccountId()) {
+				deleteChannelAccount(channelAccount.getChannelAccountId());
+			}
 		}
 	}
 

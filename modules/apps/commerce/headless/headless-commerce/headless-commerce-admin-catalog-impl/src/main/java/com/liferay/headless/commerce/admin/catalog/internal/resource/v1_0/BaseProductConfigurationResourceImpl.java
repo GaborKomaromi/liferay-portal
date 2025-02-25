@@ -801,7 +801,13 @@ public abstract class BaseProductConfigurationResourceImpl
 		for (ProductConfiguration productConfiguration :
 				productConfigurations) {
 
-			deleteProductConfiguration(productConfiguration.getId());
+			if (productConfiguration.getId() != null) {
+				deleteProductConfiguration(productConfiguration.getId());
+			}
+			else {
+				deleteProductConfigurationByExternalReferenceCode(
+					productConfiguration.getExternalReferenceCode());
+			}
 		}
 	}
 

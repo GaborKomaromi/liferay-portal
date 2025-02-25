@@ -539,7 +539,9 @@ public abstract class BaseMappedProductResourceImpl
 		throws Exception {
 
 		for (MappedProduct mappedProduct : mappedProducts) {
-			deleteMappedProduct(mappedProduct.getId());
+			if (mappedProduct.getId() != null) {
+				deleteMappedProduct(mappedProduct.getId());
+			}
 		}
 	}
 

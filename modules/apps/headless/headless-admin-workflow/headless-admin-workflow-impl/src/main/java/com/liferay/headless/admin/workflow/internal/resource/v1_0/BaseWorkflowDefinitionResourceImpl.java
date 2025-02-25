@@ -671,7 +671,9 @@ public abstract class BaseWorkflowDefinitionResourceImpl
 		throws Exception {
 
 		for (WorkflowDefinition workflowDefinition : workflowDefinitions) {
-			deleteWorkflowDefinition(workflowDefinition.getId());
+			if (workflowDefinition.getId() != null) {
+				deleteWorkflowDefinition(workflowDefinition.getId());
+			}
 		}
 	}
 

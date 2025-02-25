@@ -582,7 +582,9 @@ public abstract class BaseWikiPageAttachmentResourceImpl
 		throws Exception {
 
 		for (WikiPageAttachment wikiPageAttachment : wikiPageAttachments) {
-			deleteWikiPageAttachment(wikiPageAttachment.getId());
+			if (wikiPageAttachment.getId() != null) {
+				deleteWikiPageAttachment(wikiPageAttachment.getId());
+			}
 		}
 	}
 

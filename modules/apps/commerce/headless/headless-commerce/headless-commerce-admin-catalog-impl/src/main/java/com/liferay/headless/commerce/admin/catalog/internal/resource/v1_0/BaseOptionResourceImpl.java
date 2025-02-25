@@ -605,7 +605,13 @@ public abstract class BaseOptionResourceImpl
 		throws Exception {
 
 		for (Option option : options) {
-			deleteOption(option.getId());
+			if (option.getId() != null) {
+				deleteOption(option.getId());
+			}
+			else {
+				deleteOptionByExternalReferenceCode(
+					option.getExternalReferenceCode());
+			}
 		}
 	}
 

@@ -1208,7 +1208,13 @@ public abstract class BasePostalAddressResourceImpl
 		throws Exception {
 
 		for (PostalAddress postalAddress : postalAddresses) {
-			deletePostalAddress(postalAddress.getId());
+			if (postalAddress.getId() != null) {
+				deletePostalAddress(postalAddress.getId());
+			}
+			else {
+				deletePostalAddressByExternalReferenceCode(
+					postalAddress.getExternalReferenceCode());
+			}
 		}
 	}
 

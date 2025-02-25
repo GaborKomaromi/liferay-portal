@@ -2249,7 +2249,9 @@ public abstract class BaseDocumentResourceImpl
 		throws Exception {
 
 		for (Document document : documents) {
-			deleteDocument(document.getId());
+			if (document.getId() != null) {
+				deleteDocument(document.getId());
+			}
 		}
 	}
 

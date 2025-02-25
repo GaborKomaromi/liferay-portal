@@ -1753,7 +1753,13 @@ public abstract class BaseOrganizationResourceImpl
 		throws Exception {
 
 		for (Organization organization : organizations) {
-			deleteOrganization(organization.getId());
+			if (organization.getId() != null) {
+				deleteOrganization(organization.getId());
+			}
+			else {
+				deleteOrganizationByExternalReferenceCode(
+					organization.getExternalReferenceCode());
+			}
 		}
 	}
 

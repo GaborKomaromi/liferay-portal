@@ -744,7 +744,13 @@ public abstract class BasePhoneResourceImpl
 		throws Exception {
 
 		for (Phone phone : phones) {
-			deletePhone(phone.getId());
+			if (phone.getId() != null) {
+				deletePhone(phone.getId());
+			}
+			else {
+				deletePhoneByExternalReferenceCode(
+					phone.getExternalReferenceCode());
+			}
 		}
 	}
 

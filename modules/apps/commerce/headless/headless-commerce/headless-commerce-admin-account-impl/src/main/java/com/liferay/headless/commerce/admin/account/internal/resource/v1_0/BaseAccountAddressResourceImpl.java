@@ -759,7 +759,13 @@ public abstract class BaseAccountAddressResourceImpl
 		throws Exception {
 
 		for (AccountAddress accountAddress : accountAddresses) {
-			deleteAccountAddress(accountAddress.getId());
+			if (accountAddress.getId() != null) {
+				deleteAccountAddress(accountAddress.getId());
+			}
+			else {
+				deleteAccountAddressByExternalReferenceCode(
+					accountAddress.getExternalReferenceCode());
+			}
 		}
 	}
 

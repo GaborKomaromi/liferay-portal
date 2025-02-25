@@ -633,7 +633,9 @@ public abstract class BaseDataLayoutResourceImpl
 		throws Exception {
 
 		for (DataLayout dataLayout : dataLayouts) {
-			deleteDataLayout(dataLayout.getId());
+			if (dataLayout.getId() != null) {
+				deleteDataLayout(dataLayout.getId());
+			}
 		}
 	}
 

@@ -439,8 +439,10 @@ public abstract class BaseWarehouseAccountGroupResourceImpl
 		for (WarehouseAccountGroup warehouseAccountGroup :
 				warehouseAccountGroups) {
 
-			deleteWarehouseAccountGroup(
-				warehouseAccountGroup.getWarehouseAccountGroupId());
+			if (warehouseAccountGroup.getWarehouseAccountGroupId()) {
+				deleteWarehouseAccountGroup(
+					warehouseAccountGroup.getWarehouseAccountGroupId());
+			}
 		}
 	}
 

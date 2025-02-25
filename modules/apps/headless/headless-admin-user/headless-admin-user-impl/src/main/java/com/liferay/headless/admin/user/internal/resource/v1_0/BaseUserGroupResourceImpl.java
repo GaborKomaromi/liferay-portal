@@ -880,7 +880,13 @@ public abstract class BaseUserGroupResourceImpl
 		throws Exception {
 
 		for (UserGroup userGroup : userGroups) {
-			deleteUserGroup(userGroup.getId());
+			if (userGroup.getId() != null) {
+				deleteUserGroup(userGroup.getId());
+			}
+			else {
+				deleteUserGroupByExternalReferenceCode(
+					userGroup.getExternalReferenceCode());
+			}
 		}
 	}
 

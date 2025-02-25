@@ -272,8 +272,10 @@ public abstract class BaseShippingFixedOptionTermResourceImpl
 		for (ShippingFixedOptionTerm shippingFixedOptionTerm :
 				shippingFixedOptionTerms) {
 
-			deleteShippingFixedOptionTerm(
-				shippingFixedOptionTerm.getShippingFixedOptionTermId());
+			if (shippingFixedOptionTerm.getShippingFixedOptionTermId()) {
+				deleteShippingFixedOptionTerm(
+					shippingFixedOptionTerm.getShippingFixedOptionTermId());
+			}
 		}
 	}
 

@@ -2033,7 +2033,9 @@ public abstract class BaseTaxonomyVocabularyResourceImpl
 		throws Exception {
 
 		for (TaxonomyVocabulary taxonomyVocabulary : taxonomyVocabularies) {
-			deleteTaxonomyVocabulary(taxonomyVocabulary.getId());
+			if (taxonomyVocabulary.getId() != null) {
+				deleteTaxonomyVocabulary(taxonomyVocabulary.getId());
+			}
 		}
 	}
 

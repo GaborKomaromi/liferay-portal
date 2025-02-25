@@ -689,7 +689,9 @@ public abstract class BaseCountryResourceImpl
 		throws Exception {
 
 		for (Country country : countries) {
-			deleteCountry(country.getId());
+			if (country.getId() != null) {
+				deleteCountry(country.getId());
+			}
 		}
 	}
 

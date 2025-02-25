@@ -554,7 +554,13 @@ public abstract class BasePriceEntryResourceImpl
 		throws Exception {
 
 		for (PriceEntry priceEntry : priceEntries) {
-			deletePriceEntry(priceEntry.getId());
+			if (priceEntry.getId() != null) {
+				deletePriceEntry(priceEntry.getId());
+			}
+			else {
+				deletePriceEntryByExternalReferenceCode(
+					priceEntry.getExternalReferenceCode());
+			}
 		}
 	}
 

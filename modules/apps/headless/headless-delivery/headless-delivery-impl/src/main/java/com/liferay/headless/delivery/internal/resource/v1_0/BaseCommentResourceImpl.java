@@ -1867,7 +1867,9 @@ public abstract class BaseCommentResourceImpl
 		throws Exception {
 
 		for (Comment comment : comments) {
-			deleteComment(comment.getId());
+			if (comment.getId() != null) {
+				deleteComment(comment.getId());
+			}
 		}
 	}
 

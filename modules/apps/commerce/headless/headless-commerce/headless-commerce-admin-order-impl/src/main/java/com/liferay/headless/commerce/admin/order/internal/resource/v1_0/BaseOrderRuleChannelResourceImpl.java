@@ -417,7 +417,10 @@ public abstract class BaseOrderRuleChannelResourceImpl
 		throws Exception {
 
 		for (OrderRuleChannel orderRuleChannel : orderRuleChannels) {
-			deleteOrderRuleChannel(orderRuleChannel.getOrderRuleChannelId());
+			if (orderRuleChannel.getOrderRuleChannelId()) {
+				deleteOrderRuleChannel(
+					orderRuleChannel.getOrderRuleChannelId());
+			}
 		}
 	}
 

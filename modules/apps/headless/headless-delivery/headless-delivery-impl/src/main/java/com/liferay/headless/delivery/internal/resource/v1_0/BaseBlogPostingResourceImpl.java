@@ -1423,7 +1423,9 @@ public abstract class BaseBlogPostingResourceImpl
 		throws Exception {
 
 		for (BlogPosting blogPosting : blogPostings) {
-			deleteBlogPosting(blogPosting.getId());
+			if (blogPosting.getId() != null) {
+				deleteBlogPosting(blogPosting.getId());
+			}
 		}
 	}
 

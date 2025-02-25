@@ -813,7 +813,9 @@ public abstract class BaseObjectDefinitionResourceImpl
 		throws Exception {
 
 		for (ObjectDefinition objectDefinition : objectDefinitions) {
-			deleteObjectDefinition(objectDefinition.getId());
+			if (objectDefinition.getId() != null) {
+				deleteObjectDefinition(objectDefinition.getId());
+			}
 		}
 	}
 

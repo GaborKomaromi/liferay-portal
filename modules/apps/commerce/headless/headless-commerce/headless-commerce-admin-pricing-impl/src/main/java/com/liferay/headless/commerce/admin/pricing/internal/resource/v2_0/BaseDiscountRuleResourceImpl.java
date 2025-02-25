@@ -464,7 +464,9 @@ public abstract class BaseDiscountRuleResourceImpl
 		throws Exception {
 
 		for (DiscountRule discountRule : discountRules) {
-			deleteDiscountRule(discountRule.getId());
+			if (discountRule.getId() != null) {
+				deleteDiscountRule(discountRule.getId());
+			}
 		}
 	}
 

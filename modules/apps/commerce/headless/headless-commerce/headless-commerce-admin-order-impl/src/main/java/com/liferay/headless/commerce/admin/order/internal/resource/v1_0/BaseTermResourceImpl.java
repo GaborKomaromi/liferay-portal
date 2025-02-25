@@ -642,7 +642,13 @@ public abstract class BaseTermResourceImpl
 		throws Exception {
 
 		for (Term term : terms) {
-			deleteTerm(term.getId());
+			if (term.getId() != null) {
+				deleteTerm(term.getId());
+			}
+			else {
+				deleteTermByExternalReferenceCode(
+					term.getExternalReferenceCode());
+			}
 		}
 	}
 

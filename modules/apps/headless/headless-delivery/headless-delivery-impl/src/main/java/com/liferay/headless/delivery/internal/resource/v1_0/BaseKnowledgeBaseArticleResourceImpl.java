@@ -2019,7 +2019,9 @@ public abstract class BaseKnowledgeBaseArticleResourceImpl
 		for (KnowledgeBaseArticle knowledgeBaseArticle :
 				knowledgeBaseArticles) {
 
-			deleteKnowledgeBaseArticle(knowledgeBaseArticle.getId());
+			if (knowledgeBaseArticle.getId() != null) {
+				deleteKnowledgeBaseArticle(knowledgeBaseArticle.getId());
+			}
 		}
 	}
 

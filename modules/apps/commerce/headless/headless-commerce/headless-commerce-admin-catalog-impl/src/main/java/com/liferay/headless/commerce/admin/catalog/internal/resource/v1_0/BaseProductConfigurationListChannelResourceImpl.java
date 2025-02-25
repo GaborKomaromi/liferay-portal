@@ -459,9 +459,13 @@ public abstract class BaseProductConfigurationListChannelResourceImpl
 		for (ProductConfigurationListChannel productConfigurationListChannel :
 				productConfigurationListChannels) {
 
-			deleteProductConfigurationListChannel(
-				productConfigurationListChannel.
-					getProductConfigurationListChannelId());
+			if (productConfigurationListChannel.
+					getProductConfigurationListChannelId()) {
+
+				deleteProductConfigurationListChannel(
+					productConfigurationListChannel.
+						getProductConfigurationListChannelId());
+			}
 		}
 	}
 

@@ -2075,7 +2075,9 @@ public abstract class BaseStructuredContentFolderResourceImpl
 		for (StructuredContentFolder structuredContentFolder :
 				structuredContentFolders) {
 
-			deleteStructuredContentFolder(structuredContentFolder.getId());
+			if (structuredContentFolder.getId() != null) {
+				deleteStructuredContentFolder(structuredContentFolder.getId());
+			}
 		}
 	}
 

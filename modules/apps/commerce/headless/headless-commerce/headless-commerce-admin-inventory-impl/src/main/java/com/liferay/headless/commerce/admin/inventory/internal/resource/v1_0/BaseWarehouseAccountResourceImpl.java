@@ -418,7 +418,10 @@ public abstract class BaseWarehouseAccountResourceImpl
 		throws Exception {
 
 		for (WarehouseAccount warehouseAccount : warehouseAccounts) {
-			deleteWarehouseAccount(warehouseAccount.getWarehouseAccountId());
+			if (warehouseAccount.getWarehouseAccountId()) {
+				deleteWarehouseAccount(
+					warehouseAccount.getWarehouseAccountId());
+			}
 		}
 	}
 

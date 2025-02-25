@@ -413,7 +413,9 @@ public abstract class BaseProductOptionResourceImpl
 		throws Exception {
 
 		for (ProductOption productOption : productOptions) {
-			deleteProductOption(productOption.getId());
+			if (productOption.getId() != null) {
+				deleteProductOption(productOption.getId());
+			}
 		}
 	}
 

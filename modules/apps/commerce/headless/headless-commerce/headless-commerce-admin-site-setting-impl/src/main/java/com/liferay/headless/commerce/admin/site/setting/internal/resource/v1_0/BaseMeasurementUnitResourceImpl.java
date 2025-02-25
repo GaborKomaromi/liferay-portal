@@ -763,7 +763,13 @@ public abstract class BaseMeasurementUnitResourceImpl
 		throws Exception {
 
 		for (MeasurementUnit measurementUnit : measurementUnits) {
-			deleteMeasurementUnit(measurementUnit.getId());
+			if (measurementUnit.getId() != null) {
+				deleteMeasurementUnit(measurementUnit.getId());
+			}
+			else {
+				deleteMeasurementUnitByExternalReferenceCode(
+					measurementUnit.getExternalReferenceCode());
+			}
 		}
 	}
 

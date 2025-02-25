@@ -383,7 +383,9 @@ public abstract class BaseProcessResourceImpl
 		throws Exception {
 
 		for (Process process : processes) {
-			deleteProcess(process.getId());
+			if (process.getId() != null) {
+				deleteProcess(process.getId());
+			}
 		}
 	}
 

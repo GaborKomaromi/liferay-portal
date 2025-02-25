@@ -417,7 +417,10 @@ public abstract class BasePriceListChannelResourceImpl
 		throws Exception {
 
 		for (PriceListChannel priceListChannel : priceListChannels) {
-			deletePriceListChannel(priceListChannel.getPriceListChannelId());
+			if (priceListChannel.getPriceListChannelId()) {
+				deletePriceListChannel(
+					priceListChannel.getPriceListChannelId());
+			}
 		}
 	}
 

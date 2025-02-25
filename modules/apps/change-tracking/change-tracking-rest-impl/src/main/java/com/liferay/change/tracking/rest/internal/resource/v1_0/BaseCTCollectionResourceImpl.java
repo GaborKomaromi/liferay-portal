@@ -872,7 +872,13 @@ public abstract class BaseCTCollectionResourceImpl
 		throws Exception {
 
 		for (CTCollection ctCollection : ctCollections) {
-			deleteCTCollection(ctCollection.getId());
+			if (ctCollection.getId() != null) {
+				deleteCTCollection(ctCollection.getId());
+			}
+			else {
+				deleteCTCollectionByExternalReferenceCode(
+					ctCollection.getExternalReferenceCode());
+			}
 		}
 	}
 

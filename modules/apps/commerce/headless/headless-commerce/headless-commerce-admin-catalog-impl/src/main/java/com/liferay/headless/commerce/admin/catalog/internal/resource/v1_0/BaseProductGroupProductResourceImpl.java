@@ -415,7 +415,9 @@ public abstract class BaseProductGroupProductResourceImpl
 		throws Exception {
 
 		for (ProductGroupProduct productGroupProduct : productGroupProducts) {
-			deleteProductGroupProduct(productGroupProduct.getId());
+			if (productGroupProduct.getId() != null) {
+				deleteProductGroupProduct(productGroupProduct.getId());
+			}
 		}
 	}
 

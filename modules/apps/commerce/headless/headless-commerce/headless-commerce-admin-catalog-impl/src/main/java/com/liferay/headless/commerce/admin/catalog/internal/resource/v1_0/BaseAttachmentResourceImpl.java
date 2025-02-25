@@ -1011,7 +1011,13 @@ public abstract class BaseAttachmentResourceImpl
 		throws Exception {
 
 		for (Attachment attachment : attachments) {
-			deleteAttachment(attachment.getId());
+			if (attachment.getId() != null) {
+				deleteAttachment(attachment.getId());
+			}
+			else {
+				deleteAttachmentByExternalReferenceCode(
+					attachment.getExternalReferenceCode());
+			}
 		}
 	}
 

@@ -651,7 +651,13 @@ public abstract class BaseOptionCategoryResourceImpl
 		throws Exception {
 
 		for (OptionCategory optionCategory : optionCategories) {
-			deleteOptionCategory(optionCategory.getId());
+			if (optionCategory.getId() != null) {
+				deleteOptionCategory(optionCategory.getId());
+			}
+			else {
+				deleteOptionCategoryByExternalReferenceCode(
+					optionCategory.getExternalReferenceCode());
+			}
 		}
 	}
 

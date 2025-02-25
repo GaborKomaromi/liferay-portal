@@ -1031,7 +1031,9 @@ public abstract class BaseDocumentMetadataSetResourceImpl
 		throws Exception {
 
 		for (DocumentMetadataSet documentMetadataSet : documentMetadataSets) {
-			deleteDocumentMetadataSet(documentMetadataSet.getId());
+			if (documentMetadataSet.getId() != null) {
+				deleteDocumentMetadataSet(documentMetadataSet.getId());
+			}
 		}
 	}
 

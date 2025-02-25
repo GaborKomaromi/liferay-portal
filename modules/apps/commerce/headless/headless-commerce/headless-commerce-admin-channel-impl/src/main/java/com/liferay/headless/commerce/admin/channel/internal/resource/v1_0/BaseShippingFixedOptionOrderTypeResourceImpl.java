@@ -275,9 +275,13 @@ public abstract class BaseShippingFixedOptionOrderTypeResourceImpl
 		for (ShippingFixedOptionOrderType shippingFixedOptionOrderType :
 				shippingFixedOptionOrderTypes) {
 
-			deleteShippingFixedOptionOrderType(
-				shippingFixedOptionOrderType.
-					getShippingFixedOptionOrderTypeId());
+			if (shippingFixedOptionOrderType.
+					getShippingFixedOptionOrderTypeId()) {
+
+				deleteShippingFixedOptionOrderType(
+					shippingFixedOptionOrderType.
+						getShippingFixedOptionOrderTypeId());
+			}
 		}
 	}
 

@@ -276,9 +276,13 @@ public abstract class BasePaymentMethodGroupRelOrderTypeResourceImpl
 		for (PaymentMethodGroupRelOrderType paymentMethodGroupRelOrderType :
 				paymentMethodGroupRelOrderTypes) {
 
-			deletePaymentMethodGroupRelOrderType(
-				paymentMethodGroupRelOrderType.
-					getPaymentMethodGroupRelOrderTypeId());
+			if (paymentMethodGroupRelOrderType.
+					getPaymentMethodGroupRelOrderTypeId()) {
+
+				deletePaymentMethodGroupRelOrderType(
+					paymentMethodGroupRelOrderType.
+						getPaymentMethodGroupRelOrderTypeId());
+			}
 		}
 	}
 

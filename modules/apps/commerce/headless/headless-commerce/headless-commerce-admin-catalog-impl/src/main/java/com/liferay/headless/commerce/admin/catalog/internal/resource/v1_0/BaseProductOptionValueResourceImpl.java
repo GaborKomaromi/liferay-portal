@@ -360,7 +360,9 @@ public abstract class BaseProductOptionValueResourceImpl
 		throws Exception {
 
 		for (ProductOptionValue productOptionValue : productOptionValues) {
-			deleteProductOptionValue(productOptionValue.getId());
+			if (productOptionValue.getId() != null) {
+				deleteProductOptionValue(productOptionValue.getId());
+			}
 		}
 	}
 

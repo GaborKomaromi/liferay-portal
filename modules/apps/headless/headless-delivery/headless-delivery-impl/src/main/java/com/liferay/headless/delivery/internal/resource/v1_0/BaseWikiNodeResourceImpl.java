@@ -1101,7 +1101,9 @@ public abstract class BaseWikiNodeResourceImpl
 		throws Exception {
 
 		for (WikiNode wikiNode : wikiNodes) {
-			deleteWikiNode(wikiNode.getId());
+			if (wikiNode.getId() != null) {
+				deleteWikiNode(wikiNode.getId());
+			}
 		}
 	}
 

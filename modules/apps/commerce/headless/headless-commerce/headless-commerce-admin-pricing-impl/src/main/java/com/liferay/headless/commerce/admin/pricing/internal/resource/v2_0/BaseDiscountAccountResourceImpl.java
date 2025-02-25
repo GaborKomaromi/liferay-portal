@@ -416,7 +416,9 @@ public abstract class BaseDiscountAccountResourceImpl
 		throws Exception {
 
 		for (DiscountAccount discountAccount : discountAccounts) {
-			deleteDiscountAccount(discountAccount.getDiscountAccountId());
+			if (discountAccount.getDiscountAccountId()) {
+				deleteDiscountAccount(discountAccount.getDiscountAccountId());
+			}
 		}
 	}
 

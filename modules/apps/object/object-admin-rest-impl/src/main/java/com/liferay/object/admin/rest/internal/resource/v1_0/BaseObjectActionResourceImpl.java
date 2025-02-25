@@ -704,7 +704,9 @@ public abstract class BaseObjectActionResourceImpl
 		throws Exception {
 
 		for (ObjectAction objectAction : objectActions) {
-			deleteObjectAction(objectAction.getId());
+			if (objectAction.getId() != null) {
+				deleteObjectAction(objectAction.getId());
+			}
 		}
 	}
 

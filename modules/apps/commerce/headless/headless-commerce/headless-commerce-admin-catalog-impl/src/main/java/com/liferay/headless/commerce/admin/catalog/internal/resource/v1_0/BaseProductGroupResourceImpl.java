@@ -609,7 +609,13 @@ public abstract class BaseProductGroupResourceImpl
 		throws Exception {
 
 		for (ProductGroup productGroup : productGroups) {
-			deleteProductGroup(productGroup.getId());
+			if (productGroup.getId() != null) {
+				deleteProductGroup(productGroup.getId());
+			}
+			else {
+				deleteProductGroupByExternalReferenceCode(
+					productGroup.getExternalReferenceCode());
+			}
 		}
 	}
 

@@ -434,7 +434,9 @@ public abstract class BasePinResourceImpl
 		throws Exception {
 
 		for (Pin pin : pins) {
-			deletePin(pin.getId());
+			if (pin.getId() != null) {
+				deletePin(pin.getId());
+			}
 		}
 	}
 

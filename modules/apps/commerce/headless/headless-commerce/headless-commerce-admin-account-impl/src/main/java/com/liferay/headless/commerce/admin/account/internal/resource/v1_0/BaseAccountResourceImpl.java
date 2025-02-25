@@ -719,7 +719,13 @@ public abstract class BaseAccountResourceImpl
 		throws Exception {
 
 		for (Account account : accounts) {
-			deleteAccount(account.getId());
+			if (account.getId() != null) {
+				deleteAccount(account.getId());
+			}
+			else {
+				deleteAccountByExternalReferenceCode(
+					account.getExternalReferenceCode());
+			}
 		}
 	}
 

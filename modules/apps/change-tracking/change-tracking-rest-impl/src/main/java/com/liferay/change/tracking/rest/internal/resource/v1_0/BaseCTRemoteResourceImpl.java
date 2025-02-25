@@ -525,7 +525,9 @@ public abstract class BaseCTRemoteResourceImpl
 		throws Exception {
 
 		for (CTRemote ctRemote : ctRemotes) {
-			deleteCTRemote(ctRemote.getId());
+			if (ctRemote.getId() != null) {
+				deleteCTRemote(ctRemote.getId());
+			}
 		}
 	}
 

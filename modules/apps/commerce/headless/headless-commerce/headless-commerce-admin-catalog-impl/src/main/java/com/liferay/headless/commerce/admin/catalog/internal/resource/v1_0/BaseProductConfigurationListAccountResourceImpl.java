@@ -459,9 +459,13 @@ public abstract class BaseProductConfigurationListAccountResourceImpl
 		for (ProductConfigurationListAccount productConfigurationListAccount :
 				productConfigurationListAccounts) {
 
-			deleteProductConfigurationListAccount(
-				productConfigurationListAccount.
-					getProductConfigurationListAccountId());
+			if (productConfigurationListAccount.
+					getProductConfigurationListAccountId()) {
+
+				deleteProductConfigurationListAccount(
+					productConfigurationListAccount.
+						getProductConfigurationListAccountId());
+			}
 		}
 	}
 

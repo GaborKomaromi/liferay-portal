@@ -803,7 +803,13 @@ public abstract class BaseChannelResourceImpl
 		throws Exception {
 
 		for (Channel channel : channels) {
-			deleteChannel(channel.getId());
+			if (channel.getId() != null) {
+				deleteChannel(channel.getId());
+			}
+			else {
+				deleteChannelByExternalReferenceCode(
+					channel.getExternalReferenceCode());
+			}
 		}
 	}
 

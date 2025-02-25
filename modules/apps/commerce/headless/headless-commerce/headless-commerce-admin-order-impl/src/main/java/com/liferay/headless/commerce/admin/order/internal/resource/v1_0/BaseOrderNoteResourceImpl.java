@@ -553,7 +553,13 @@ public abstract class BaseOrderNoteResourceImpl
 		throws Exception {
 
 		for (OrderNote orderNote : orderNotes) {
-			deleteOrderNote(orderNote.getId());
+			if (orderNote.getId() != null) {
+				deleteOrderNote(orderNote.getId());
+			}
+			else {
+				deleteOrderNoteByExternalReferenceCode(
+					orderNote.getExternalReferenceCode());
+			}
 		}
 	}
 

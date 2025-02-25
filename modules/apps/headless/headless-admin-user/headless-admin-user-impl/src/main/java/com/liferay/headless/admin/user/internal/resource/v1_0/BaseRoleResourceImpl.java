@@ -1330,7 +1330,13 @@ public abstract class BaseRoleResourceImpl
 		throws Exception {
 
 		for (Role role : roles) {
-			deleteRole(role.getId());
+			if (role.getId() != null) {
+				deleteRole(role.getId());
+			}
+			else {
+				deleteRoleByExternalReferenceCode(
+					role.getExternalReferenceCode());
+			}
 		}
 	}
 

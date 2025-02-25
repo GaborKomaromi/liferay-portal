@@ -587,7 +587,13 @@ public abstract class BasePriceModifierResourceImpl
 		throws Exception {
 
 		for (PriceModifier priceModifier : priceModifiers) {
-			deletePriceModifier(priceModifier.getId());
+			if (priceModifier.getId() != null) {
+				deletePriceModifier(priceModifier.getId());
+			}
+			else {
+				deletePriceModifierByExternalReferenceCode(
+					priceModifier.getExternalReferenceCode());
+			}
 		}
 	}
 

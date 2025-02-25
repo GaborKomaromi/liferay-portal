@@ -648,7 +648,13 @@ public abstract class BaseCartCommentResourceImpl
 		throws Exception {
 
 		for (CartComment cartComment : cartComments) {
-			deleteCartComment(cartComment.getId());
+			if (cartComment.getId() != null) {
+				deleteCartComment(cartComment.getId());
+			}
+			else {
+				deleteCartCommentByExternalReferenceCode(
+					cartComment.getExternalReferenceCode());
+			}
 		}
 	}
 

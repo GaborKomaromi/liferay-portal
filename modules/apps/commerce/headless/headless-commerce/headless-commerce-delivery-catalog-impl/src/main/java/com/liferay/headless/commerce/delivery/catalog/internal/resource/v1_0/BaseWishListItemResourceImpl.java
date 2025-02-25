@@ -291,7 +291,9 @@ public abstract class BaseWishListItemResourceImpl
 		throws Exception {
 
 		for (WishListItem wishListItem : wishListItems) {
-			deleteWishListItem(wishListItem.getId());
+			if (wishListItem.getId() != null) {
+				deleteWishListItem(wishListItem.getId());
+			}
 		}
 	}
 

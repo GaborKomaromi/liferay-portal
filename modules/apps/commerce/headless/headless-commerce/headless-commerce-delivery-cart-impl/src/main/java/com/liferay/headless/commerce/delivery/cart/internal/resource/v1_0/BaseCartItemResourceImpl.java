@@ -784,7 +784,13 @@ public abstract class BaseCartItemResourceImpl
 		throws Exception {
 
 		for (CartItem cartItem : cartItems) {
-			deleteCartItem(cartItem.getId());
+			if (cartItem.getId() != null) {
+				deleteCartItem(cartItem.getId());
+			}
+			else {
+				deleteCartItemByExternalReferenceCode(
+					cartItem.getExternalReferenceCode());
+			}
 		}
 	}
 

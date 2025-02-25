@@ -412,7 +412,10 @@ public abstract class BaseOrderTypeChannelResourceImpl
 		throws Exception {
 
 		for (OrderTypeChannel orderTypeChannel : orderTypeChannels) {
-			deleteOrderTypeChannel(orderTypeChannel.getOrderTypeChannelId());
+			if (orderTypeChannel.getOrderTypeChannelId()) {
+				deleteOrderTypeChannel(
+					orderTypeChannel.getOrderTypeChannelId());
+			}
 		}
 	}
 

@@ -990,7 +990,13 @@ public abstract class BaseAccountGroupResourceImpl
 		throws Exception {
 
 		for (AccountGroup accountGroup : accountGroups) {
-			deleteAccountGroup(accountGroup.getId());
+			if (accountGroup.getId() != null) {
+				deleteAccountGroup(accountGroup.getId());
+			}
+			else {
+				deleteAccountGroupByExternalReferenceCode(
+					accountGroup.getExternalReferenceCode());
+			}
 		}
 	}
 

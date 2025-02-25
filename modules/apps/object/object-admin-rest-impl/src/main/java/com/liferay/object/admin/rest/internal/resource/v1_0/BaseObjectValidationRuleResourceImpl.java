@@ -770,7 +770,9 @@ public abstract class BaseObjectValidationRuleResourceImpl
 		for (ObjectValidationRule objectValidationRule :
 				objectValidationRules) {
 
-			deleteObjectValidationRule(objectValidationRule.getId());
+			if (objectValidationRule.getId() != null) {
+				deleteObjectValidationRule(objectValidationRule.getId());
+			}
 		}
 	}
 

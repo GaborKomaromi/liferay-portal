@@ -350,8 +350,10 @@ public abstract class BaseAccountAddressChannelResourceImpl
 		for (AccountAddressChannel accountAddressChannel :
 				accountAddressChannels) {
 
-			deleteAccountAddressChannel(
-				accountAddressChannel.getAccountAddressChannelId());
+			if (accountAddressChannel.getAccountAddressChannelId()) {
+				deleteAccountAddressChannel(
+					accountAddressChannel.getAccountAddressChannelId());
+			}
 		}
 	}
 

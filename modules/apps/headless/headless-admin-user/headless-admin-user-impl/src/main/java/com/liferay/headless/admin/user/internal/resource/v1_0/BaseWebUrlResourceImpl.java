@@ -743,7 +743,13 @@ public abstract class BaseWebUrlResourceImpl
 		throws Exception {
 
 		for (WebUrl webUrl : webUrls) {
-			deleteWebUrl(webUrl.getId());
+			if (webUrl.getId() != null) {
+				deleteWebUrl(webUrl.getId());
+			}
+			else {
+				deleteWebUrlByExternalReferenceCode(
+					webUrl.getExternalReferenceCode());
+			}
 		}
 	}
 

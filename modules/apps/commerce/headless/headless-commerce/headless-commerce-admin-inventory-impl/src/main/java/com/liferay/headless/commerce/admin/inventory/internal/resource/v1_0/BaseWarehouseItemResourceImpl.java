@@ -662,7 +662,13 @@ public abstract class BaseWarehouseItemResourceImpl
 		throws Exception {
 
 		for (WarehouseItem warehouseItem : warehouseItems) {
-			deleteWarehouseItem(warehouseItem.getId());
+			if (warehouseItem.getId() != null) {
+				deleteWarehouseItem(warehouseItem.getId());
+			}
+			else {
+				deleteWarehouseItemByExternalReferenceCode(
+					warehouseItem.getExternalReferenceCode());
+			}
 		}
 	}
 

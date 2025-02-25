@@ -756,7 +756,13 @@ public abstract class BaseEmailAddressResourceImpl
 		throws Exception {
 
 		for (EmailAddress emailAddress : emailAddresses) {
-			deleteEmailAddress(emailAddress.getId());
+			if (emailAddress.getId() != null) {
+				deleteEmailAddress(emailAddress.getId());
+			}
+			else {
+				deleteEmailAddressByExternalReferenceCode(
+					emailAddress.getExternalReferenceCode());
+			}
 		}
 	}
 

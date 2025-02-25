@@ -416,7 +416,9 @@ public abstract class BaseDiscountProductResourceImpl
 		throws Exception {
 
 		for (DiscountProduct discountProduct : discountProducts) {
-			deleteDiscountProduct(discountProduct.getDiscountProductId());
+			if (discountProduct.getDiscountProductId()) {
+				deleteDiscountProduct(discountProduct.getDiscountProductId());
+			}
 		}
 	}
 

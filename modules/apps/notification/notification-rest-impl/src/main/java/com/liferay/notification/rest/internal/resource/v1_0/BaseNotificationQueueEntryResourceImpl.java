@@ -481,7 +481,9 @@ public abstract class BaseNotificationQueueEntryResourceImpl
 		for (NotificationQueueEntry notificationQueueEntry :
 				notificationQueueEntries) {
 
-			deleteNotificationQueueEntry(notificationQueueEntry.getId());
+			if (notificationQueueEntry.getId() != null) {
+				deleteNotificationQueueEntry(notificationQueueEntry.getId());
+			}
 		}
 	}
 

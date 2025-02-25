@@ -417,7 +417,10 @@ public abstract class BaseDiscountOrderTypeResourceImpl
 		throws Exception {
 
 		for (DiscountOrderType discountOrderType : discountOrderTypes) {
-			deleteDiscountOrderType(discountOrderType.getDiscountOrderTypeId());
+			if (discountOrderType.getDiscountOrderTypeId()) {
+				deleteDiscountOrderType(
+					discountOrderType.getDiscountOrderTypeId());
+			}
 		}
 	}
 

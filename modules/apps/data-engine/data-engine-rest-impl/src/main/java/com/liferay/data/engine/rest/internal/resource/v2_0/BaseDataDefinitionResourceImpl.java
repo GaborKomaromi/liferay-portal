@@ -990,7 +990,9 @@ public abstract class BaseDataDefinitionResourceImpl
 		throws Exception {
 
 		for (DataDefinition dataDefinition : dataDefinitions) {
-			deleteDataDefinition(dataDefinition.getId());
+			if (dataDefinition.getId() != null) {
+				deleteDataDefinition(dataDefinition.getId());
+			}
 		}
 	}
 

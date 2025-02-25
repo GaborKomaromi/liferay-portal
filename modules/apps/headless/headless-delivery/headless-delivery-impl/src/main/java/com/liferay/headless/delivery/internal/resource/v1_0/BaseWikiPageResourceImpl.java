@@ -1032,7 +1032,9 @@ public abstract class BaseWikiPageResourceImpl
 		throws Exception {
 
 		for (WikiPage wikiPage : wikiPages) {
-			deleteWikiPage(wikiPage.getId());
+			if (wikiPage.getId() != null) {
+				deleteWikiPage(wikiPage.getId());
+			}
 		}
 	}
 

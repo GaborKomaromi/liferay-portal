@@ -766,7 +766,9 @@ public abstract class BaseSXPBlueprintResourceImpl
 		throws Exception {
 
 		for (SXPBlueprint sxpBlueprint : sxpBlueprints) {
-			deleteSXPBlueprint(sxpBlueprint.getId());
+			if (sxpBlueprint.getId() != null) {
+				deleteSXPBlueprint(sxpBlueprint.getId());
+			}
 		}
 	}
 

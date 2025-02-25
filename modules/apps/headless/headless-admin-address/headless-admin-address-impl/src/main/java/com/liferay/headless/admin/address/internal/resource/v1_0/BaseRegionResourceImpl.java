@@ -752,7 +752,9 @@ public abstract class BaseRegionResourceImpl
 		throws Exception {
 
 		for (Region region : regions) {
-			deleteRegion(region.getId());
+			if (region.getId() != null) {
+				deleteRegion(region.getId());
+			}
 		}
 	}
 

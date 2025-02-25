@@ -808,7 +808,9 @@ public abstract class BaseNotificationTemplateResourceImpl
 		for (NotificationTemplate notificationTemplate :
 				notificationTemplates) {
 
-			deleteNotificationTemplate(notificationTemplate.getId());
+			if (notificationTemplate.getId() != null) {
+				deleteNotificationTemplate(notificationTemplate.getId());
+			}
 		}
 	}
 

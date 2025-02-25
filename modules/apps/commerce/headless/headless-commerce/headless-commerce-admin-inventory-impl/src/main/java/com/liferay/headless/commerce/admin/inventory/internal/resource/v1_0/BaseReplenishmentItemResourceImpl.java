@@ -732,7 +732,13 @@ public abstract class BaseReplenishmentItemResourceImpl
 		throws Exception {
 
 		for (ReplenishmentItem replenishmentItem : replenishmentItems) {
-			deleteReplenishmentItem(replenishmentItem.getId());
+			if (replenishmentItem.getId() != null) {
+				deleteReplenishmentItem(replenishmentItem.getId());
+			}
+			else {
+				deleteReplenishmentItemByExternalReferenceCode(
+					replenishmentItem.getExternalReferenceCode());
+			}
 		}
 	}
 

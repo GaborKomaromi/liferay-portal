@@ -553,7 +553,13 @@ public abstract class BaseTierPriceResourceImpl
 		throws Exception {
 
 		for (TierPrice tierPrice : tierPrices) {
-			deleteTierPrice(tierPrice.getId());
+			if (tierPrice.getId() != null) {
+				deleteTierPrice(tierPrice.getId());
+			}
+			else {
+				deleteTierPriceByExternalReferenceCode(
+					tierPrice.getExternalReferenceCode());
+			}
 		}
 	}
 

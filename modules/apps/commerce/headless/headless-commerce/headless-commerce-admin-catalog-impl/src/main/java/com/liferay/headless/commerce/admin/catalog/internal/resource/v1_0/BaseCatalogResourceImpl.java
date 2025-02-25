@@ -686,7 +686,13 @@ public abstract class BaseCatalogResourceImpl
 		throws Exception {
 
 		for (Catalog catalog : catalogs) {
-			deleteCatalog(catalog.getId());
+			if (catalog.getId() != null) {
+				deleteCatalog(catalog.getId());
+			}
+			else {
+				deleteCatalogByExternalReferenceCode(
+					catalog.getExternalReferenceCode());
+			}
 		}
 	}
 

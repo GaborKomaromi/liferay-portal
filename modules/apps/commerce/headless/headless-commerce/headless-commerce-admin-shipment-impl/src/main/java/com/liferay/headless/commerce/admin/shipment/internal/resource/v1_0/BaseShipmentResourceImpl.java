@@ -843,7 +843,13 @@ public abstract class BaseShipmentResourceImpl
 		throws Exception {
 
 		for (Shipment shipment : shipments) {
-			deleteShipment(shipment.getId());
+			if (shipment.getId() != null) {
+				deleteShipment(shipment.getId());
+			}
+			else {
+				deleteShipmentByExternalReferenceCode(
+					shipment.getExternalReferenceCode());
+			}
 		}
 	}
 

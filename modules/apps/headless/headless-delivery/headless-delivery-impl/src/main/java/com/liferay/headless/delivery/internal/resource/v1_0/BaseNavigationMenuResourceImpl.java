@@ -1041,7 +1041,9 @@ public abstract class BaseNavigationMenuResourceImpl
 		throws Exception {
 
 		for (NavigationMenu navigationMenu : navigationMenus) {
-			deleteNavigationMenu(navigationMenu.getId());
+			if (navigationMenu.getId() != null) {
+				deleteNavigationMenu(navigationMenu.getId());
+			}
 		}
 	}
 

@@ -798,7 +798,9 @@ public abstract class BaseSXPElementResourceImpl
 		throws Exception {
 
 		for (SXPElement sxpElement : sxpElements) {
-			deleteSXPElement(sxpElement.getId());
+			if (sxpElement.getId() != null) {
+				deleteSXPElement(sxpElement.getId());
+			}
 		}
 	}
 

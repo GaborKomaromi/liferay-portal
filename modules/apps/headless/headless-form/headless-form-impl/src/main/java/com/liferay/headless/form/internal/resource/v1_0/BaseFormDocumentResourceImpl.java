@@ -196,7 +196,9 @@ public abstract class BaseFormDocumentResourceImpl
 		throws Exception {
 
 		for (FormDocument formDocument : formDocuments) {
-			deleteFormDocument(formDocument.getId());
+			if (formDocument.getId() != null) {
+				deleteFormDocument(formDocument.getId());
+			}
 		}
 	}
 

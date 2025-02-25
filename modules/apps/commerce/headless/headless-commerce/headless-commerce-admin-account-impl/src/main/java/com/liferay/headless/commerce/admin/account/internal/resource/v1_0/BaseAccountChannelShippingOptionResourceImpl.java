@@ -501,8 +501,10 @@ public abstract class BaseAccountChannelShippingOptionResourceImpl
 		for (AccountChannelShippingOption accountChannelShippingOption :
 				accountChannelShippingOptions) {
 
-			deleteAccountChannelShippingOption(
-				accountChannelShippingOption.getId());
+			if (accountChannelShippingOption.getId() != null) {
+				deleteAccountChannelShippingOption(
+					accountChannelShippingOption.getId());
+			}
 		}
 	}
 

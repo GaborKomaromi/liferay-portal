@@ -418,8 +418,10 @@ public abstract class BaseWarehouseOrderTypeResourceImpl
 		throws Exception {
 
 		for (WarehouseOrderType warehouseOrderType : warehouseOrderTypes) {
-			deleteWarehouseOrderType(
-				warehouseOrderType.getWarehouseOrderTypeId());
+			if (warehouseOrderType.getWarehouseOrderTypeId()) {
+				deleteWarehouseOrderType(
+					warehouseOrderType.getWarehouseOrderTypeId());
+			}
 		}
 	}
 

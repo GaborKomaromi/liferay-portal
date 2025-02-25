@@ -422,7 +422,9 @@ public abstract class BaseDiscountAccountGroupResourceImpl
 		for (DiscountAccountGroup discountAccountGroup :
 				discountAccountGroups) {
 
-			deleteDiscountAccountGroup(discountAccountGroup.getId());
+			if (discountAccountGroup.getId() != null) {
+				deleteDiscountAccountGroup(discountAccountGroup.getId());
+			}
 		}
 	}
 

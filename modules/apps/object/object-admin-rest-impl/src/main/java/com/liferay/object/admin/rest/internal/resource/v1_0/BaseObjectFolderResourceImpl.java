@@ -617,7 +617,9 @@ public abstract class BaseObjectFolderResourceImpl
 		throws Exception {
 
 		for (ObjectFolder objectFolder : objectFolders) {
-			deleteObjectFolder(objectFolder.getId());
+			if (objectFolder.getId() != null) {
+				deleteObjectFolder(objectFolder.getId());
+			}
 		}
 	}
 

@@ -598,7 +598,13 @@ public abstract class BasePriceListResourceImpl
 		throws Exception {
 
 		for (PriceList priceList : priceLists) {
-			deletePriceList(priceList.getId());
+			if (priceList.getId() != null) {
+				deletePriceList(priceList.getId());
+			}
+			else {
+				deletePriceListByExternalReferenceCode(
+					priceList.getExternalReferenceCode());
+			}
 		}
 	}
 

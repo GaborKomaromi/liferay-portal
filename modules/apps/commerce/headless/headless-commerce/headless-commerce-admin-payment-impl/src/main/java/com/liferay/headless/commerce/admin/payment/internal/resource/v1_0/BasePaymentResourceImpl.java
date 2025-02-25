@@ -763,7 +763,13 @@ public abstract class BasePaymentResourceImpl
 		throws Exception {
 
 		for (Payment payment : payments) {
-			deletePayment(payment.getId());
+			if (payment.getId() != null) {
+				deletePayment(payment.getId());
+			}
+			else {
+				deletePaymentByExternalReferenceCode(
+					payment.getExternalReferenceCode());
+			}
 		}
 	}
 

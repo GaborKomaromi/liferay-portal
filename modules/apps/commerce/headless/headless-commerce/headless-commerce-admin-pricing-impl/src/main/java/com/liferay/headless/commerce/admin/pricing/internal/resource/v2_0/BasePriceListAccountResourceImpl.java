@@ -409,7 +409,10 @@ public abstract class BasePriceListAccountResourceImpl
 		throws Exception {
 
 		for (PriceListAccount priceListAccount : priceListAccounts) {
-			deletePriceListAccount(priceListAccount.getPriceListAccountId());
+			if (priceListAccount.getPriceListAccountId()) {
+				deletePriceListAccount(
+					priceListAccount.getPriceListAccountId());
+			}
 		}
 	}
 

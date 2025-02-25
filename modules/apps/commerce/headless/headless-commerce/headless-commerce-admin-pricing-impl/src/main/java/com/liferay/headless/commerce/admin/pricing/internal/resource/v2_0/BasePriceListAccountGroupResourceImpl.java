@@ -426,8 +426,10 @@ public abstract class BasePriceListAccountGroupResourceImpl
 		for (PriceListAccountGroup priceListAccountGroup :
 				priceListAccountGroups) {
 
-			deletePriceListAccountGroup(
-				priceListAccountGroup.getPriceListAccountGroupId());
+			if (priceListAccountGroup.getPriceListAccountGroupId()) {
+				deletePriceListAccountGroup(
+					priceListAccountGroup.getPriceListAccountGroupId());
+			}
 		}
 	}
 

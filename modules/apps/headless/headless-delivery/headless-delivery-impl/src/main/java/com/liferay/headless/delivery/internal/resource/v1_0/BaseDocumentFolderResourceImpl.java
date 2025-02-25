@@ -1995,7 +1995,9 @@ public abstract class BaseDocumentFolderResourceImpl
 		throws Exception {
 
 		for (DocumentFolder documentFolder : documentFolders) {
-			deleteDocumentFolder(documentFolder.getId());
+			if (documentFolder.getId() != null) {
+				deleteDocumentFolder(documentFolder.getId());
+			}
 		}
 	}
 

@@ -552,7 +552,9 @@ public abstract class BaseDataListViewResourceImpl
 		throws Exception {
 
 		for (DataListView dataListView : dataListViews) {
-			deleteDataListView(dataListView.getId());
+			if (dataListView.getId() != null) {
+				deleteDataListView(dataListView.getId());
+			}
 		}
 	}
 

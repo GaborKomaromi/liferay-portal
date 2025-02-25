@@ -833,7 +833,13 @@ public abstract class BaseOrderItemResourceImpl
 		throws Exception {
 
 		for (OrderItem orderItem : orderItems) {
-			deleteOrderItem(orderItem.getId());
+			if (orderItem.getId() != null) {
+				deleteOrderItem(orderItem.getId());
+			}
+			else {
+				deleteOrderItemByExternalReferenceCode(
+					orderItem.getExternalReferenceCode());
+			}
 		}
 	}
 

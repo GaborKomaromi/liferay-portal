@@ -407,8 +407,10 @@ public abstract class BaseOrderRuleOrderTypeResourceImpl
 		throws Exception {
 
 		for (OrderRuleOrderType orderRuleOrderType : orderRuleOrderTypes) {
-			deleteOrderRuleOrderType(
-				orderRuleOrderType.getOrderRuleOrderTypeId());
+			if (orderRuleOrderType.getOrderRuleOrderTypeId()) {
+				deleteOrderRuleOrderType(
+					orderRuleOrderType.getOrderRuleOrderTypeId());
+			}
 		}
 	}
 

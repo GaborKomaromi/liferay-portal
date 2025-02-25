@@ -1669,7 +1669,9 @@ public abstract class BaseMessageBoardThreadResourceImpl
 		throws Exception {
 
 		for (MessageBoardThread messageBoardThread : messageBoardThreads) {
-			deleteMessageBoardThread(messageBoardThread.getId());
+			if (messageBoardThread.getId() != null) {
+				deleteMessageBoardThread(messageBoardThread.getId());
+			}
 		}
 	}
 

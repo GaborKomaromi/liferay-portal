@@ -649,7 +649,9 @@ public abstract class BaseObjectViewResourceImpl
 		throws Exception {
 
 		for (ObjectView objectView : objectViews) {
-			deleteObjectView(objectView.getId());
+			if (objectView.getId() != null) {
+				deleteObjectView(objectView.getId());
+			}
 		}
 	}
 

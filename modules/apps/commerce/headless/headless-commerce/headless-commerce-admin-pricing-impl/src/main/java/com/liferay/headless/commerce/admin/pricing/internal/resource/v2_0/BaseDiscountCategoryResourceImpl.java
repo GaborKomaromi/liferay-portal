@@ -416,7 +416,10 @@ public abstract class BaseDiscountCategoryResourceImpl
 		throws Exception {
 
 		for (DiscountCategory discountCategory : discountCategories) {
-			deleteDiscountCategory(discountCategory.getDiscountCategoryId());
+			if (discountCategory.getDiscountCategoryId()) {
+				deleteDiscountCategory(
+					discountCategory.getDiscountCategoryId());
+			}
 		}
 	}
 

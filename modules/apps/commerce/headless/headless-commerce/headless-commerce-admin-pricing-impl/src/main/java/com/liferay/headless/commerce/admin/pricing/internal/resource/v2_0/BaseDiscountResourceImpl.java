@@ -705,7 +705,13 @@ public abstract class BaseDiscountResourceImpl
 		throws Exception {
 
 		for (Discount discount : discounts) {
-			deleteDiscount(discount.getId());
+			if (discount.getId() != null) {
+				deleteDiscount(discount.getId());
+			}
+			else {
+				deleteDiscountByExternalReferenceCode(
+					discount.getExternalReferenceCode());
+			}
 		}
 	}
 

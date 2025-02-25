@@ -400,7 +400,10 @@ public abstract class BasePriceListDiscountResourceImpl
 		throws Exception {
 
 		for (PriceListDiscount priceListDiscount : priceListDiscounts) {
-			deletePriceListDiscount(priceListDiscount.getPriceListDiscountId());
+			if (priceListDiscount.getPriceListDiscountId()) {
+				deletePriceListDiscount(
+					priceListDiscount.getPriceListDiscountId());
+			}
 		}
 	}
 

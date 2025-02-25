@@ -1282,7 +1282,9 @@ public abstract class BaseMessageBoardSectionResourceImpl
 		throws Exception {
 
 		for (MessageBoardSection messageBoardSection : messageBoardSections) {
-			deleteMessageBoardSection(messageBoardSection.getId());
+			if (messageBoardSection.getId() != null) {
+				deleteMessageBoardSection(messageBoardSection.getId());
+			}
 		}
 	}
 

@@ -8,6 +8,9 @@ package com.liferay.portal.vulcan.util;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.Portal;
@@ -302,6 +305,17 @@ public class UriInfoUtil {
 		};
 	}
 
+	private static String _getCompanyVirtualHostname() {
+		Company company = CompanyLocalServiceUtil.fetchCompany(
+			CompanyThreadLocal.getCompanyId());
+
+		if (company == null) {
+			return null;
+		}
+
+		return company.getVirtualHostname();
+	}
+
 	private static String _getHost(UriBuilder uriBuilder) {
 		try {
 			if (_uriBuilderHostField == null) {
@@ -351,12 +365,16 @@ public class UriInfoUtil {
 			}
 		}
 
-		String webServerHost = PropsUtil.get(PropsKeys.WEB_SERVER_HOST);
+		String host = _getCompanyVirtualHostname();
 
-		if (Validator.isNotNull(webServerHost)) {
+		if (Validator.isNull(host)) {
+			host = PropsUtil.get(PropsKeys.WEB_SERVER_HOST);
+		}
+
+		if (Validator.isNotNull(host)) {
 			boolean secure = _isSecure();
 
-			uriBuilder.host(webServerHost);
+			uriBuilder.host(host);
 
 			_setPort(
 				uriBuilder,

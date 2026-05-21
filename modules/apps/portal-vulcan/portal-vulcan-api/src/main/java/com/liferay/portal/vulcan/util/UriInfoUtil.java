@@ -374,18 +374,19 @@ public class UriInfoUtil {
 		if (Validator.isNotNull(host)) {
 			boolean secure = _isSecure();
 
+			int defaultPort = secure ? Http.HTTPS_PORT : Http.HTTP_PORT;
+			String portPropsKey = secure ? PropsKeys.WEB_SERVER_HTTPS_PORT :
+				PropsKeys.WEB_SERVER_HTTP_PORT;
+			String scheme = secure ? Http.HTTPS : Http.HTTP;
+
 			uriBuilder.host(host);
 
 			_setPort(
 				uriBuilder,
-				GetterUtil.getInteger(
-					PropsUtil.get(
-						secure ? PropsKeys.WEB_SERVER_HTTPS_PORT :
-							PropsKeys.WEB_SERVER_HTTP_PORT),
-					secure ? Http.HTTPS_PORT : Http.HTTP_PORT),
+				GetterUtil.getInteger(PropsUtil.get(portPropsKey), defaultPort),
 				secure);
 
-			uriBuilder.scheme(secure ? Http.HTTPS : Http.HTTP);
+			uriBuilder.scheme(scheme);
 
 			return uriBuilder;
 		}

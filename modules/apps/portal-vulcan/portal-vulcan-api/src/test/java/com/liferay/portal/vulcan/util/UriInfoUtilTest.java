@@ -101,6 +101,24 @@ public class UriInfoUtilTest {
 	}
 
 	@Test
+	public void testGetBaseUriBuilderCompanyVirtualHostnameNullFallsBackToWebServerHost()
+		throws Exception {
+
+		_stubCompanyVirtualHostname(null);
+
+		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, _WEB_SERVER_HOST);
+		PropsUtil.set(
+			PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(Http.HTTP_PORT));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(Http.HTTP_WITH_SLASH + _WEB_SERVER_HOST + _PATH),
+			_uriBuilder.build());
+	}
+
+	@Test
 	public void testGetBaseUriBuilderCompanyVirtualHostnameOverridesSpoofedHost()
 		throws Exception {
 
@@ -210,6 +228,27 @@ public class UriInfoUtilTest {
 	}
 
 	@Test
+	public void testGetBaseUriBuilderWebServerHostEmptyStringPreservesUriInfoHost()
+		throws Exception {
+
+		int spoofedPort = RandomTestUtil.randomInt(
+			_PORT_MIN_INCLUSIVE, _PORT_MAX_INCLUSIVE);
+
+		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, StringPool.BLANK);
+
+		_uriBuilder.host(_SPOOFED_HOST);
+		_uriBuilder.port(spoofedPort);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(
+				StringBundler.concat(
+					_SPOOFED_HOST, StringPool.COLON, spoofedPort, _PATH)),
+			_uriBuilder.build());
+	}
+
+	@Test
 	public void testGetBaseUriBuilderWebServerHostHttpCustomPort()
 		throws Exception {
 
@@ -285,25 +324,6 @@ public class UriInfoUtilTest {
 	}
 
 	@Test
-	public void testGetBaseUriBuilderWebServerHostNullPreservesUriInfoHost()
-		throws Exception {
-
-		int spoofedPort = RandomTestUtil.randomInt(
-			_PORT_MIN_INCLUSIVE, _PORT_MAX_INCLUSIVE);
-
-		_uriBuilder.host(_SPOOFED_HOST);
-		_uriBuilder.port(spoofedPort);
-
-		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
-
-		Assert.assertEquals(
-			new URI(
-				StringBundler.concat(
-					_SPOOFED_HOST, StringPool.COLON, spoofedPort, _PATH)),
-			_uriBuilder.build());
-	}
-
-	@Test
 	public void testGetBaseUriBuilderWebServerHostOverridesSpoofedHost()
 		throws Exception {
 
@@ -323,6 +343,25 @@ public class UriInfoUtilTest {
 
 		Assert.assertEquals(
 			new URI(Http.HTTPS_WITH_SLASH + _WEB_SERVER_HOST + _PATH),
+			_uriBuilder.build());
+	}
+
+	@Test
+	public void testGetBaseUriBuilderWebServerHostUnsetPreservesUriInfoHost()
+		throws Exception {
+
+		int spoofedPort = RandomTestUtil.randomInt(
+			_PORT_MIN_INCLUSIVE, _PORT_MAX_INCLUSIVE);
+
+		_uriBuilder.host(_SPOOFED_HOST);
+		_uriBuilder.port(spoofedPort);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(
+				StringBundler.concat(
+					_SPOOFED_HOST, StringPool.COLON, spoofedPort, _PATH)),
 			_uriBuilder.build());
 	}
 

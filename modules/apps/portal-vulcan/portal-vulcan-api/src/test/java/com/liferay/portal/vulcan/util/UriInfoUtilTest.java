@@ -7,6 +7,10 @@ package com.liferay.portal.vulcan.util;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.Portal;
@@ -48,6 +52,12 @@ public class UriInfoUtilTest {
 
 		portalUtil.setPortal(_portal);
 
+		_originalCompanyLocalService = ReflectionTestUtil.getFieldValue(
+			CompanyLocalServiceUtil.class, "_service");
+
+		ReflectionTestUtil.setFieldValue(
+			CompanyLocalServiceUtil.class, "_service", _companyLocalService);
+
 		Mockito.when(
 			_uriInfo.getBaseUriBuilder()
 		).thenReturn(
@@ -59,9 +69,77 @@ public class UriInfoUtilTest {
 
 	@After
 	public void tearDown() {
+		ReflectionTestUtil.setFieldValue(
+			CompanyLocalServiceUtil.class, "_service",
+			_originalCompanyLocalService);
+
 		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, null);
 		PropsUtil.set(PropsKeys.WEB_SERVER_HTTP_PORT, null);
 		PropsUtil.set(PropsKeys.WEB_SERVER_HTTPS_PORT, null);
+	}
+
+	@Test
+	public void testGetBaseUriBuilderCompanyVirtualHostnameHttpCustomPort()
+		throws Exception {
+
+		int httpPort = RandomTestUtil.randomInt(
+			_PORT_MIN_INCLUSIVE, _PORT_MAX_INCLUSIVE);
+
+		_stubCompanyVirtualHostname(_COMPANY_VIRTUAL_HOSTNAME);
+
+		PropsUtil.set(PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(httpPort));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(
+				StringBundler.concat(
+					Http.HTTP_WITH_SLASH, _COMPANY_VIRTUAL_HOSTNAME,
+					StringPool.COLON, httpPort, _PATH)),
+			_uriBuilder.build());
+	}
+
+	@Test
+	public void testGetBaseUriBuilderCompanyVirtualHostnameOverridesSpoofedHost()
+		throws Exception {
+
+		int spoofedPort = RandomTestUtil.randomInt(
+			_PORT_MIN_INCLUSIVE, _PORT_MAX_INCLUSIVE);
+
+		_stubCompanyVirtualHostname(_COMPANY_VIRTUAL_HOSTNAME);
+
+		PropsUtil.set(
+			PropsKeys.WEB_SERVER_HTTPS_PORT, String.valueOf(Http.HTTPS_PORT));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTPS);
+
+		_uriBuilder.host(_SPOOFED_HOST);
+		_uriBuilder.port(spoofedPort);
+		_uriBuilder.scheme(Http.HTTP);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(Http.HTTPS_WITH_SLASH + _COMPANY_VIRTUAL_HOSTNAME + _PATH),
+			_uriBuilder.build());
+	}
+
+	@Test
+	public void testGetBaseUriBuilderCompanyVirtualHostnameOverridesWebServerHost()
+		throws Exception {
+
+		_stubCompanyVirtualHostname(_COMPANY_VIRTUAL_HOSTNAME);
+
+		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, _WEB_SERVER_HOST);
+		PropsUtil.set(
+			PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(Http.HTTP_PORT));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(Http.HTTP_WITH_SLASH + _COMPANY_VIRTUAL_HOSTNAME + _PATH),
+			_uriBuilder.build());
 	}
 
 	@Test
@@ -139,8 +217,8 @@ public class UriInfoUtilTest {
 			_PORT_MIN_INCLUSIVE, _PORT_MAX_INCLUSIVE);
 
 		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, _WEB_SERVER_HOST);
-		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
 		PropsUtil.set(PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(httpPort));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
 
 		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
 
@@ -298,6 +376,25 @@ public class UriInfoUtilTest {
 		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, protocol);
 	}
 
+	private void _stubCompanyVirtualHostname(String virtualHostname) {
+		Company company = Mockito.mock(Company.class);
+
+		Mockito.when(
+			company.getVirtualHostname()
+		).thenReturn(
+			virtualHostname
+		);
+
+		Mockito.when(
+			_companyLocalService.fetchCompany(Mockito.anyLong())
+		).thenReturn(
+			company
+		);
+	}
+
+	private static final String _COMPANY_VIRTUAL_HOSTNAME =
+		"tenant.example.com";
+
 	private static final String _PATH = "/test-path";
 
 	private static final int _PORT_MAX_INCLUSIVE = 65535;
@@ -308,6 +405,9 @@ public class UriInfoUtilTest {
 
 	private static final String _WEB_SERVER_HOST = "example.com";
 
+	private final CompanyLocalService _companyLocalService = Mockito.mock(
+		CompanyLocalService.class);
+	private CompanyLocalService _originalCompanyLocalService;
 	private final Portal _portal = Mockito.mock(Portal.class);
 	private final UriBuilder _uriBuilder = Mockito.spy(
 		new UriBuilderImpl(

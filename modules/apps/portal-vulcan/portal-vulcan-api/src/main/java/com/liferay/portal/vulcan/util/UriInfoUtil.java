@@ -365,10 +365,10 @@ public class UriInfoUtil {
 			}
 		}
 
-		String host = _getCompanyVirtualHostname();
+		String host = PropsUtil.get(PropsKeys.WEB_SERVER_HOST);
 
 		if (Validator.isNull(host)) {
-			host = PropsUtil.get(PropsKeys.WEB_SERVER_HOST);
+			host = _getCompanyVirtualHostname();
 		}
 
 		if (Validator.isNotNull(host)) {

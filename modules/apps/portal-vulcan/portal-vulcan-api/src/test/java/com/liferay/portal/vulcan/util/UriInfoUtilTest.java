@@ -101,24 +101,6 @@ public class UriInfoUtilTest {
 	}
 
 	@Test
-	public void testGetBaseUriBuilderCompanyVirtualHostnameNullFallsBackToWebServerHost()
-		throws Exception {
-
-		_stubCompanyVirtualHostname(null);
-
-		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, _WEB_SERVER_HOST);
-		PropsUtil.set(
-			PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(Http.HTTP_PORT));
-		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
-
-		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
-
-		Assert.assertEquals(
-			new URI(Http.HTTP_WITH_SLASH + _WEB_SERVER_HOST + _PATH),
-			_uriBuilder.build());
-	}
-
-	@Test
 	public void testGetBaseUriBuilderCompanyVirtualHostnameOverridesSpoofedHost()
 		throws Exception {
 
@@ -139,24 +121,6 @@ public class UriInfoUtilTest {
 
 		Assert.assertEquals(
 			new URI(Http.HTTPS_WITH_SLASH + _COMPANY_VIRTUAL_HOSTNAME + _PATH),
-			_uriBuilder.build());
-	}
-
-	@Test
-	public void testGetBaseUriBuilderCompanyVirtualHostnameOverridesWebServerHost()
-		throws Exception {
-
-		_stubCompanyVirtualHostname(_COMPANY_VIRTUAL_HOSTNAME);
-
-		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, _WEB_SERVER_HOST);
-		PropsUtil.set(
-			PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(Http.HTTP_PORT));
-		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
-
-		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
-
-		Assert.assertEquals(
-			new URI(Http.HTTP_WITH_SLASH + _COMPANY_VIRTUAL_HOSTNAME + _PATH),
 			_uriBuilder.build());
 	}
 
@@ -324,6 +288,24 @@ public class UriInfoUtilTest {
 	}
 
 	@Test
+	public void testGetBaseUriBuilderWebServerHostOverridesCompanyVirtualHostname()
+		throws Exception {
+
+		_stubCompanyVirtualHostname(_COMPANY_VIRTUAL_HOSTNAME);
+
+		PropsUtil.set(PropsKeys.WEB_SERVER_HOST, _WEB_SERVER_HOST);
+		PropsUtil.set(
+			PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(Http.HTTP_PORT));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(Http.HTTP_WITH_SLASH + _WEB_SERVER_HOST + _PATH),
+			_uriBuilder.build());
+	}
+
+	@Test
 	public void testGetBaseUriBuilderWebServerHostOverridesSpoofedHost()
 		throws Exception {
 
@@ -343,6 +325,23 @@ public class UriInfoUtilTest {
 
 		Assert.assertEquals(
 			new URI(Http.HTTPS_WITH_SLASH + _WEB_SERVER_HOST + _PATH),
+			_uriBuilder.build());
+	}
+
+	@Test
+	public void testGetBaseUriBuilderWebServerHostUnsetFallsBackToCompanyVirtualHostname()
+		throws Exception {
+
+		_stubCompanyVirtualHostname(_COMPANY_VIRTUAL_HOSTNAME);
+
+		PropsUtil.set(
+			PropsKeys.WEB_SERVER_HTTP_PORT, String.valueOf(Http.HTTP_PORT));
+		PropsUtil.set(PropsKeys.WEB_SERVER_PROTOCOL, Http.HTTP);
+
+		Assert.assertSame(_uriBuilder, UriInfoUtil.getBaseUriBuilder(_uriInfo));
+
+		Assert.assertEquals(
+			new URI(Http.HTTP_WITH_SLASH + _COMPANY_VIRTUAL_HOSTNAME + _PATH),
 			_uriBuilder.build());
 	}
 

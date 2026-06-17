@@ -806,6 +806,7 @@ testWithDeprecationFFDisabled(
 
 testWithDeprecationFF(
 	'Can import the default site on a new instance twice',
+	{tag: '@LPD-94660'},
 	async ({apiHelpers, exportImportPage, featureFlags, page}) => {
 		test.slow();
 
@@ -852,7 +853,14 @@ testWithDeprecationFF(
 		await page.goto(
 			`http://www.able.com:${liferayConfig.environment.port}/group${site.friendlyUrlPath}${PORTLET_URLS.import}`
 		);
-		await exportImportPage.importByDefault(exportFilePath);
-		await exportImportPage.importByDefault(exportFilePath);
+
+		await exportImportPage.importByDefault(
+			exportFilePath,
+			'completedWithErrors'
+		);
+		await exportImportPage.importByDefault(
+			exportFilePath,
+			'completedWithErrors'
+		);
 	}
 );

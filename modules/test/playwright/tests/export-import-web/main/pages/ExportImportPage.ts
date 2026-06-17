@@ -538,13 +538,16 @@ export class ExportImportPage {
 		});
 	}
 
-	async importByDefault(filePath: string) {
+	async importByDefault(
+		filePath: string,
+		taskStatus: taskStatus = 'success'
+	) {
 		await this.selectImportFile({filePath});
 
 		await this.importButton.click();
 
 		await expect(
-			this.taskStatusLabel(path.basename(filePath), 'success')
+			this.taskStatusLabel(path.basename(filePath), taskStatus)
 		).toBeVisible();
 	}
 

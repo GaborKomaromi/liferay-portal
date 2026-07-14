@@ -7,6 +7,7 @@
 
 <%@ include file="/init.jsp" %>
 
+<%--
 <aui:script>
 	Liferay.Util.setPortletConfigurationIconAction(
 		'<portlet:namespace />exportImport',
@@ -25,5 +26,16 @@
 				url: '<%= HtmlUtil.escapeJS(portletDisplay.getURLExportImport()) %>',
 			});
 		}
+	);
+</aui:script>
+--%>
+<aui:script>
+	Liferay.Util.setPortletConfigurationIconAction(
+	'<portlet:namespace />exportImport',
+	() => {
+	const url = '<%= HtmlUtil.escapeJS(portletDisplay.getURLExportImport()) %>';
+
+	window.open(url, '_blank'); // opens in a new tab
+	}
 	);
 </aui:script>

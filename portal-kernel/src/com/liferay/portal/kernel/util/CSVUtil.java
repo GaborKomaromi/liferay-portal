@@ -77,9 +77,14 @@ public class CSVUtil {
 	}
 
 	public static boolean isFormulaInjectionPrefix(char c) {
-		return (c == CharPool.AT) || (c == CharPool.EQUAL) ||
+		if ((c == CharPool.AT) || (c == CharPool.EQUAL) ||
 			(c == CharPool.MINUS) || (c == CharPool.PLUS) ||
-			(c == CharPool.RETURN) || (c == CharPool.TAB);
+			(c == CharPool.RETURN) || (c == CharPool.TAB)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 }

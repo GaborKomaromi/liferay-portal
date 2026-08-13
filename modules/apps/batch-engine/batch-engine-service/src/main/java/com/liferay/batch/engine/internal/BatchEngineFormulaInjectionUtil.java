@@ -5,12 +5,15 @@
 
 package com.liferay.batch.engine.internal;
 
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.util.CSVUtil;
 
 /**
  * Neutralizes spreadsheet formula injection (CWE-1236) when exporting to CSV
- * and XLS. The neutralization logic is shared with the rest of the portal
- * through {@link CSVUtil}.
+ * and XLS, and reverses the neutralization when importing so that a value
+ * survives an export and import round trip unchanged. The neutralization is
+ * shared with the rest of the portal through {@link CSVUtil}; only the inverse,
+ * needed because the batch engine re-imports its own exports, lives here.
  *
  * @author Gabor Komaromi
  */
@@ -22,6 +25,17 @@ public class BatchEngineFormulaInjectionUtil {
 		}
 
 		return CSVUtil.escapeValue((String)value);
+	}
+
+	public static String restore(String value) {
+		if ((value == null) || (value.length() < 2) ||
+			(value.charAt(0) != CharPool.APOSTROPHE) ||
+			!CSVUtil.isFormulaInjectionPrefix(value.charAt(1))) {
+
+			return value;
+		}
+
+		return value.substring(1);
 	}
 
 }

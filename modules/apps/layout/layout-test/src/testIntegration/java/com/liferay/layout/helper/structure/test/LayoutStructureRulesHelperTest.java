@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,6 +87,74 @@ public class LayoutStructureRulesHelperTest {
 		_group = GroupTestUtil.addGroup();
 
 		_user = UserTestUtil.addUser(_group.getGroupId());
+	}
+
+	@Test
+	public void testUnreferencedInfoFieldValueIsNotResolved() throws Exception {
+		InfoField<TextInfoFieldType> referencedInfoField = InfoField.builder(
+			"Test"
+		).infoFieldType(
+			TextInfoFieldType.INSTANCE
+		).name(
+			"status"
+		).labelInfoLocalizedValue(
+			InfoLocalizedValue.localize(getClass(), "status")
+		).build();
+
+		InfoField<TextInfoFieldType> unreferencedInfoField = InfoField.builder(
+			"Test"
+		).infoFieldType(
+			TextInfoFieldType.INSTANCE
+		).name(
+			"template"
+		).labelInfoLocalizedValue(
+			InfoLocalizedValue.localize(getClass(), "template")
+		).build();
+
+		AtomicInteger valueSupplierCount = new AtomicInteger();
+
+		Supplier<Object> valueSupplier = () -> {
+			valueSupplierCount.incrementAndGet();
+
+			return "expensive";
+		};
+
+		InfoItemFieldValues infoItemFieldValues = InfoItemFieldValues.builder(
+		).infoFieldValue(
+			new InfoFieldValue<>(referencedInfoField, "active")
+		).infoFieldValue(
+			new InfoFieldValue<>(unreferencedInfoField, valueSupplier)
+		).build();
+
+		LayoutStructure layoutStructure = LayoutStructure.of(
+			StringUtil.replace(
+				_read("layout_data_rules_field.json"), "${", "}",
+				HashMapBuilder.put(
+					"FIELD_NAME", referencedInfoField.getUniqueId()
+				).put(
+					"FIELD_VALUE", "active"
+				).put(
+					"OPERATOR", "equal"
+				).build()));
+
+		PermissionChecker permissionChecker =
+			PermissionCheckerFactoryUtil.create(_user);
+
+		LayoutStructureRulesHelper.LayoutStructureRulesResult
+			layoutStructureRulesResult =
+				_layoutStructureRulesHelper.processLayoutStructureRules(
+					_group.getGroupId(), infoItemFieldValues, layoutStructure,
+					LocaleUtil.getDefault(), permissionChecker,
+					new long[] {SegmentsEntryConstants.ID_DEFAULT});
+
+		Set<String> displayedItemIds =
+			layoutStructureRulesResult.getDisplayedItemIds();
+
+		Assert.assertTrue(
+			displayedItemIds.toString(),
+			displayedItemIds.contains("container2"));
+
+		Assert.assertEquals(0, valueSupplierCount.get());
 	}
 
 	@Test

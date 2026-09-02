@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -328,6 +329,83 @@ public class LayoutStructureRulesHelperImpl
 		throw new IllegalArgumentException("Unknown action type: " + type);
 	}
 
+	private Object _getInfoFieldValue(
+		InfoFieldValue<Object> infoFieldValue, Locale locale) {
+
+		InfoField infoField = infoFieldValue.getInfoField();
+
+		Object value = infoFieldValue.getValue(locale);
+
+		if (infoField.getInfoFieldType() == DateInfoFieldType.INSTANCE) {
+			try {
+				DateFormat dateFormat =
+					DateFormatFactoryUtil.getSimpleDateFormat(
+						"yyyy-MM-dd", locale);
+
+				value = dateFormat.format(value);
+			}
+			catch (Exception exception) {
+				if (_log.isDebugEnabled()) {
+					_log.debug("Unable to parse date from " + value, exception);
+				}
+			}
+		}
+		else if (infoField.getInfoFieldType() ==
+					DateTimeInfoFieldType.INSTANCE) {
+
+			try {
+				DateTimeFormatter dateTimeFormatter =
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+				value = dateTimeFormatter.format((TemporalAccessor)value);
+			}
+			catch (Exception exception) {
+				if (_log.isDebugEnabled()) {
+					_log.debug("Unable to parse date from " + value, exception);
+				}
+			}
+		}
+		else if (infoField.getInfoFieldType() ==
+					PicklistMultiselectInfoFieldType.INSTANCE) {
+
+			if (value instanceof List) {
+				List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
+					(List<KeyLocalizedLabelPair>)value;
+
+				try {
+					value = JSONUtil.toJSONArray(
+						keyLocalizedLabelPairs, KeyLocalizedLabelPair::getKey);
+				}
+				catch (Exception exception) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(exception);
+					}
+				}
+			}
+		}
+		else if (infoField.getInfoFieldType() ==
+					PicklistSelectInfoFieldType.INSTANCE) {
+
+			if (value instanceof List) {
+				List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
+					(List<KeyLocalizedLabelPair>)value;
+
+				if (ListUtil.isNotEmpty(keyLocalizedLabelPairs)) {
+					KeyLocalizedLabelPair keyLocalizedLabelPair =
+						keyLocalizedLabelPairs.get(0);
+
+					value = keyLocalizedLabelPair.getKey();
+				}
+			}
+		}
+
+		if (value instanceof JSONArray) {
+			return value;
+		}
+
+		return String.valueOf(value);
+	}
+
 	private Map<String, String> _getInfoItemFieldTypesMap(
 		InfoItemFieldValues infoItemFieldValues) {
 
@@ -353,94 +431,22 @@ public class LayoutStructureRulesHelperImpl
 	private Map<String, Object> _getInfoItemFieldValuesMap(
 		InfoItemFieldValues infoItemFieldValues, Locale locale) {
 
-		Map<String, Object> map = new HashMap<>();
-
 		if (infoItemFieldValues == null) {
-			return map;
+			return Collections.emptyMap();
 		}
+
+		Map<String, InfoFieldValue<Object>> infoFieldValuesMap =
+			new HashMap<>();
 
 		for (InfoFieldValue<Object> infoFieldValue :
 				infoItemFieldValues.getInfoFieldValues()) {
 
 			InfoField infoField = infoFieldValue.getInfoField();
 
-			Object value = infoFieldValue.getValue(locale);
-
-			if (infoField.getInfoFieldType() == DateInfoFieldType.INSTANCE) {
-				try {
-					DateFormat dateFormat =
-						DateFormatFactoryUtil.getSimpleDateFormat(
-							"yyyy-MM-dd", locale);
-
-					value = dateFormat.format(value);
-				}
-				catch (Exception exception) {
-					if (_log.isDebugEnabled()) {
-						_log.debug(
-							"Unable to parse date from " + value, exception);
-					}
-				}
-			}
-			else if (infoField.getInfoFieldType() ==
-						DateTimeInfoFieldType.INSTANCE) {
-
-				try {
-					DateTimeFormatter dateTimeFormatter =
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-					value = dateTimeFormatter.format((TemporalAccessor)value);
-				}
-				catch (Exception exception) {
-					if (_log.isDebugEnabled()) {
-						_log.debug(
-							"Unable to parse date from " + value, exception);
-					}
-				}
-			}
-			else if (infoField.getInfoFieldType() ==
-						PicklistMultiselectInfoFieldType.INSTANCE) {
-
-				if (value instanceof List) {
-					List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
-						(List<KeyLocalizedLabelPair>)value;
-
-					try {
-						value = JSONUtil.toJSONArray(
-							keyLocalizedLabelPairs,
-							KeyLocalizedLabelPair::getKey);
-					}
-					catch (Exception exception) {
-						if (_log.isDebugEnabled()) {
-							_log.debug(exception);
-						}
-					}
-				}
-			}
-			else if (infoField.getInfoFieldType() ==
-						PicklistSelectInfoFieldType.INSTANCE) {
-
-				if (value instanceof List) {
-					List<KeyLocalizedLabelPair> keyLocalizedLabelPairs =
-						(List<KeyLocalizedLabelPair>)value;
-
-					if (ListUtil.isNotEmpty(keyLocalizedLabelPairs)) {
-						KeyLocalizedLabelPair keyLocalizedLabelPair =
-							keyLocalizedLabelPairs.get(0);
-
-						value = keyLocalizedLabelPair.getKey();
-					}
-				}
-			}
-
-			if (value instanceof JSONArray) {
-				map.put(infoField.getUniqueId(), value);
-			}
-			else {
-				map.put(infoField.getUniqueId(), String.valueOf(value));
-			}
+			infoFieldValuesMap.put(infoField.getUniqueId(), infoFieldValue);
 		}
 
-		return map;
+		return new LazyInfoItemFieldValuesMap(infoFieldValuesMap, locale);
 	}
 
 	private List<String> _getItemIds(LayoutStructureRule layoutStructureRule) {
@@ -836,6 +842,59 @@ public class LayoutStructureRulesHelperImpl
 		private final PermissionChecker _permissionChecker;
 		private long[] _roleIds;
 		private final long[] _segmentsEntryIds;
+
+	}
+
+	private class LazyInfoItemFieldValuesMap
+		extends AbstractMap<String, Object> {
+
+		public LazyInfoItemFieldValuesMap(
+			Map<String, InfoFieldValue<Object>> infoFieldValuesMap,
+			Locale locale) {
+
+			_infoFieldValuesMap = infoFieldValuesMap;
+			_locale = locale;
+		}
+
+		@Override
+		public boolean containsKey(Object key) {
+			return _infoFieldValuesMap.containsKey(key);
+		}
+
+		@Override
+		public Set<Map.Entry<String, Object>> entrySet() {
+			for (String key : _infoFieldValuesMap.keySet()) {
+				get(key);
+			}
+
+			return _valuesMap.entrySet();
+		}
+
+		@Override
+		public Object get(Object key) {
+			Object value = _valuesMap.get(key);
+
+			if (value != null) {
+				return value;
+			}
+
+			InfoFieldValue<Object> infoFieldValue = _infoFieldValuesMap.get(
+				key);
+
+			if (infoFieldValue == null) {
+				return null;
+			}
+
+			value = _getInfoFieldValue(infoFieldValue, _locale);
+
+			_valuesMap.put((String)key, value);
+
+			return value;
+		}
+
+		private final Map<String, InfoFieldValue<Object>> _infoFieldValuesMap;
+		private final Locale _locale;
+		private final Map<String, Object> _valuesMap = new HashMap<>();
 
 	}
 

@@ -9455,6 +9455,27 @@ public class ObjectEntryResourceTest {
 	}
 
 	@Test
+	public void testPatchObjectEntryWithUnavailableAcceptLanguage()
+		throws Exception {
+
+		JSONObject jsonObject = HTTPTestUtil.invokeToJSONObject(
+			JSONUtil.put(
+				_OBJECT_FIELD_NAME_LONG_TEXT, "longTextDeu"
+			).toString(),
+			_objectDefinition4.getRESTContextPath() + StringPool.SLASH +
+				_objectEntry5.getObjectEntryId(),
+			HashMapBuilder.put(
+				"Accept-Language", "de-DE"
+			).build(),
+			Http.Method.PATCH);
+
+		Assert.assertEquals(
+			_objectEntry5.getObjectEntryId(), jsonObject.getLong("id"));
+		Assert.assertEquals(
+			"longTextDeu", jsonObject.getString(_OBJECT_FIELD_NAME_LONG_TEXT));
+	}
+
+	@Test
 	public void testPatchPostPutCustomObjectEntryWithPermissions()
 		throws Exception {
 

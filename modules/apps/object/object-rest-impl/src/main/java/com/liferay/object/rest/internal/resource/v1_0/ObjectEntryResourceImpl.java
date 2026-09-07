@@ -81,6 +81,7 @@ import com.liferay.translation.manager.TranslationManager;
 import jakarta.servlet.http.HttpServletResponse;
 
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.NotSupportedException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -1683,8 +1684,7 @@ public class ObjectEntryResourceImpl
 		return new DefaultDTOConverterContext(
 			contextAcceptLanguage.isAcceptAllLanguages(), null,
 			_dtoConverterRegistry, contextHttpServletRequest, objectEntryId,
-			contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
-			contextUser);
+			_getPreferredLocale(), contextUriInfo, contextUser);
 	}
 
 	private String _getFilterString() {
@@ -1750,6 +1750,19 @@ public class ObjectEntryResourceImpl
 
 		return modelResourceNamePrefix.concat(
 			objectDefinition.getResourceName());
+	}
+
+	private Locale _getPreferredLocale() {
+		try {
+			return contextAcceptLanguage.getPreferredLocale();
+		}
+		catch (NotAcceptableException notAcceptableException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(notAcceptableException);
+			}
+
+			return contextUser.getLocale();
+		}
 	}
 
 	private StreamingOutput _getStreamingOutput(File file) {

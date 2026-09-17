@@ -16,12 +16,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import org.mockito.Mockito;
+
+import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * @author Gabor Komaromi
@@ -38,7 +41,7 @@ public class RESTClientTemplateContextContributorTest {
 		_vulcanRequestForwarder = Mockito.mock(VulcanRequestForwarder.class);
 
 		VulcanRequestForwarder.Response response = _response(
-			HttpServletResponse.SC_OK);
+			"content", HttpServletResponse.SC_OK);
 
 		Mockito.when(
 			_vulcanRequestForwarder.forward(Mockito.any(), Mockito.any())
@@ -48,9 +51,9 @@ public class RESTClientTemplateContextContributorTest {
 	}
 
 	@Test
-	public void testGetDoesNotCacheErrorResponse() throws Exception {
+	public void testGetCachesNullContent() throws Exception {
 		VulcanRequestForwarder.Response response = _response(
-			HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			null, HttpServletResponse.SC_OK);
 
 		Mockito.when(
 			_vulcanRequestForwarder.forward(Mockito.any(), Mockito.any())
@@ -58,7 +61,30 @@ public class RESTClientTemplateContextContributorTest {
 			response
 		);
 
-		RESTClient restClient = _createRESTClient(_createHttpServletRequest());
+		RESTClient restClient = _createRESTClient(new MockHttpServletRequest());
+
+		Assert.assertNull(restClient.get("/path"));
+		Assert.assertNull(restClient.get("/path"));
+
+		Mockito.verify(
+			_vulcanRequestForwarder, Mockito.times(1)
+		).forward(
+			Mockito.any(), Mockito.any()
+		);
+	}
+
+	@Test
+	public void testGetDoesNotCacheErrorResponse() throws Exception {
+		VulcanRequestForwarder.Response response = _response(
+			"content", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+		Mockito.when(
+			_vulcanRequestForwarder.forward(Mockito.any(), Mockito.any())
+		).thenReturn(
+			response
+		);
+
+		RESTClient restClient = _createRESTClient(new MockHttpServletRequest());
 
 		restClient.get("/path");
 		restClient.get("/path");
@@ -72,7 +98,7 @@ public class RESTClientTemplateContextContributorTest {
 
 	@Test
 	public void testGetForwardsOncePerPathWithinRender() throws Exception {
-		RESTClient restClient = _createRESTClient(_createHttpServletRequest());
+		RESTClient restClient = _createRESTClient(new MockHttpServletRequest());
 
 		restClient.get("/path");
 		restClient.get("/path");
@@ -86,7 +112,7 @@ public class RESTClientTemplateContextContributorTest {
 
 	@Test
 	public void testGetForwardsPerDistinctPath() throws Exception {
-		RESTClient restClient = _createRESTClient(_createHttpServletRequest());
+		RESTClient restClient = _createRESTClient(new MockHttpServletRequest());
 
 		restClient.get("/path");
 		restClient.get("/other");
@@ -100,8 +126,10 @@ public class RESTClientTemplateContextContributorTest {
 
 	@Test
 	public void testGetIsolatesCacheAcrossRequests() throws Exception {
-		RESTClient restClient1 = _createRESTClient(_createHttpServletRequest());
-		RESTClient restClient2 = _createRESTClient(_createHttpServletRequest());
+		RESTClient restClient1 = _createRESTClient(
+			new MockHttpServletRequest());
+		RESTClient restClient2 = _createRESTClient(
+			new MockHttpServletRequest());
 
 		restClient1.get("/path");
 		restClient2.get("/path");
@@ -117,10 +145,11 @@ public class RESTClientTemplateContextContributorTest {
 	public void testGetSharesCacheAcrossRESTClientsOnSameRequest()
 		throws Exception {
 
-		HttpServletRequest httpServletRequest = _createHttpServletRequest();
+		MockHttpServletRequest mockHttpServletRequest =
+			new MockHttpServletRequest();
 
-		RESTClient restClient1 = _createRESTClient(httpServletRequest);
-		RESTClient restClient2 = _createRESTClient(httpServletRequest);
+		RESTClient restClient1 = _createRESTClient(mockHttpServletRequest);
+		RESTClient restClient2 = _createRESTClient(mockHttpServletRequest);
 
 		restClient1.get("/path");
 		restClient2.get("/path");
@@ -130,34 +159,6 @@ public class RESTClientTemplateContextContributorTest {
 		).forward(
 			Mockito.any(), Mockito.any()
 		);
-	}
-
-	private HttpServletRequest _createHttpServletRequest() {
-		HttpServletRequest httpServletRequest = Mockito.mock(
-			HttpServletRequest.class);
-
-		Map<String, Object> attributes = new HashMap<>();
-
-		Mockito.when(
-			httpServletRequest.getAttribute(Mockito.anyString())
-		).thenAnswer(
-			invocation -> attributes.get(invocation.getArgument(0))
-		);
-
-		Mockito.doAnswer(
-			invocation -> {
-				attributes.put(
-					invocation.getArgument(0), invocation.getArgument(1));
-
-				return null;
-			}
-		).when(
-			httpServletRequest
-		).setAttribute(
-			Mockito.anyString(), Mockito.any()
-		);
-
-		return httpServletRequest;
 	}
 
 	private RESTClient _createRESTClient(
@@ -179,14 +180,16 @@ public class RESTClientTemplateContextContributorTest {
 		return (RESTClient)contextObjects.get("restClient");
 	}
 
-	private VulcanRequestForwarder.Response _response(int statusCode) {
+	private VulcanRequestForwarder.Response _response(
+		String content, int statusCode) {
+
 		VulcanRequestForwarder.Response response = Mockito.mock(
 			VulcanRequestForwarder.Response.class);
 
 		Mockito.when(
 			response.getContent()
 		).thenReturn(
-			"content"
+			content
 		);
 
 		Mockito.when(

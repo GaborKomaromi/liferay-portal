@@ -51,98 +51,95 @@ public class RESTClientTemplateContextContributor
 			_contextObjects = contextObjects;
 			_httpServletRequest = httpServletRequest;
 
-			_results = _getResults(contextObjects, httpServletRequest);
+			_contents = _getContents(contextObjects, httpServletRequest);
 		}
 
 		public Object get(String path) throws Exception {
-			Object result = _results.get(path);
+			Object content = _contents.get(path);
 
-			if (result != null) {
-				return result;
+			if ((content != null) || _contents.containsKey(path)) {
+				return content;
 			}
 
-			VulcanRequestForwarder.Response response;
-
 			try {
-				response = _forward(path);
+				return _get(path);
 			}
 			catch (Throwable throwable) {
 				_log.error(throwable, throwable);
 
 				throw throwable;
 			}
+		}
 
-			result = response.getContent();
+		private Object _get(String path) throws Exception {
+			VulcanRequestForwarder.Response response =
+				_vulcanRequestForwarder.forward(
+					_httpServletRequest,
+					new VulcanRequestForwarder.Request() {
+
+						@Override
+						public String getMethod() {
+							return "GET";
+						}
+
+						@Override
+						public String getPath() {
+							return path;
+						}
+
+						@Override
+						public User getUser() {
+							return (User)_contextObjects.get("user");
+						}
+
+					});
+
+			Object content = response.getContent();
 
 			if (Objects.equals(
 					response.getContentType(), ContentTypes.APPLICATION_JSON)) {
 
-				result = _jsonFactory.looseDeserialize(response.getContent());
+				content = _jsonFactory.looseDeserialize(response.getContent());
 			}
 
 			if (response.getStatusCode() < HttpServletResponse.SC_BAD_REQUEST) {
-				_results.put(path, result);
+				_contents.put(path, content);
 			}
 
-			return result;
-		}
-
-		private VulcanRequestForwarder.Response _forward(String path)
-			throws Exception {
-
-			return _vulcanRequestForwarder.forward(
-				_httpServletRequest,
-				new VulcanRequestForwarder.Request() {
-
-					@Override
-					public String getMethod() {
-						return "GET";
-					}
-
-					@Override
-					public String getPath() {
-						return path;
-					}
-
-					@Override
-					public User getUser() {
-						return (User)_contextObjects.get("user");
-					}
-
-				});
+			return content;
 		}
 
 		@SuppressWarnings("unchecked")
-		private Map<String, Object> _getResults(
+		private Map<String, Object> _getContents(
 			Map<String, Object> contextObjects,
 			HttpServletRequest httpServletRequest) {
 
 			if (httpServletRequest == null) {
 				return (Map<String, Object>)contextObjects.computeIfAbsent(
-					_RESULTS_KEY, key -> new HashMap<>());
+					_CONTENTS_KEY, key -> new HashMap<>());
 			}
 
-			Map<String, Object> results =
+			Map<String, Object> contents =
 				(Map<String, Object>)httpServletRequest.getAttribute(
-					_RESULTS_KEY);
+					_CONTENTS_KEY);
 
-			if (results == null) {
-				results = new HashMap<>();
+			if (contents == null) {
+				contents = new HashMap<>();
 
-				httpServletRequest.setAttribute(_RESULTS_KEY, results);
+				httpServletRequest.setAttribute(_CONTENTS_KEY, contents);
 			}
 
-			return results;
+			return contents;
 		}
 
+		private final Map<String, Object> _contents;
 		private final Map<String, Object> _contextObjects;
 		private final HttpServletRequest _httpServletRequest;
-		private final Map<String, Object> _results;
 
 	}
 
-	private static final String _RESULTS_KEY =
-		RESTClientTemplateContextContributor.class.getName() + "#results";
+	private static final String _CONTENTS_KEY =
+		RESTClientTemplateContextContributor.class.getName() + "#contents";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RESTClientTemplateContextContributor.class);
